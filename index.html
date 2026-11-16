@@ -223,7 +223,7 @@ function analyze(im){
   const colN=new Array(w).fill(0),rowN=new Array(h).fill(0),mask=new Uint8Array(w*h);let cnt=0;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
     if(Math.abs(d[i]-bg[0])+Math.abs(d[i+1]-bg[1])+Math.abs(d[i+2]-bg[2])>60){colN[x]++;rowN[y]++;cnt++;mask[y*w+x]=1;}}
-  let bbox=[0,0,1,1],blocks=[],roles=[],autoSkip=[],blockIds=[],labMap=null;
+  let bbox=[0,0,1,1],blocks=[],roles=[],autoSkip=[],blockIds=[],lineHs=[],labMap=null;
   if(cnt>w*h*0.01&&cnt<w*h*0.97){
     const tc=Math.max(1,h*0.01),tr=Math.max(1,w*0.01);
     let x0=colN.findIndex(v=>v>=tc),x1=w-1-[...colN].reverse().findIndex(v=>v>=tc);
@@ -282,7 +282,7 @@ function analyze(im){
       const lead=rest.filter(k=>k!==head&&xov(k,head)>=0.5*Math.min(k.x1-k.x0+1,head.x1-head.x0+1)&&k.y1<=head.y0+hgt(head)*0.25);
       const extras=rest.filter(k=>k!==head&&!lead.includes(k)).sort((p,q)=>p.x0-q.x0||p.y0-q.y0);
       const text=[];
-      if(lead.length)text.push({k:uni(lead),role:'text'});
+      if(lead.length)text.push({k:uni(lead),role:'text',lh:[...lead.map(hgt)].sort((p,q)=>p-q)[lead.length>>1]*(im.height/h)});   // 문구 한 줄의 글자 높이(원본 px)
       text.push({k:head,role:'head'});
       const badgeTest=k=>{const pw=prod.x1-prod.x0+1,ph=hgt(prod),cx=(k.x0+k.x1)/2,cy=(k.y0+k.y1)/2;
         return cx>=prod.x0-0.6*pw&&cx<=prod.x0+0.5*pw&&cy<=prod.y0+0.4*ph;};   // 제품 왼쪽 위 근처의 작은 요소 = 말풍선
@@ -292,11 +292,11 @@ function analyze(im){
       const seq=((prod.x0+prod.x1)/2<(tU.x0+tU.x1)/2)?[{k:prod,role:'prod'},...text]:[...text,{k:prod,role:'prod'}];
       const ha=area(head);
       labMap=lab;
-      seq.forEach((t,i)=>{blocks.push(frac(t.k));blockIds.push(t.k.ids);roles.push(t.role);if(t.role==='badge'||(t.role==='extra'&&area(t.k)<0.25*ha))autoSkip.push(i);});
+      seq.forEach((t,i)=>{blocks.push(frac(t.k));blockIds.push(t.k.ids);lineHs.push(t.lh||0);roles.push(t.role);if(t.role==='badge'||(t.role==='extra'&&area(t.k)<0.25*ha))autoSkip.push(i);});
     }
   }
   const hex='#'+bg.map(v=>v.toString(16).padStart(2,'0')).join('');
-  return {bbox,blocks,roles,autoSkip,blockIds,lab:labMap,lw:w,lh:h,uniform,bg:hex,cx:(bbox[0]+bbox[2])/2,cy:(bbox[1]+bbox[3])/2};
+  return {bbox,blocks,roles,autoSkip,blockIds,lineH:lineHs,lab:labMap,lw:w,lh:h,uniform,bg:hex,cx:(bbox[0]+bbox[2])/2,cy:(bbox[1]+bbox[3])/2};
 }
 
 // ---------- 배치 계산·그리기 ----------
@@ -316,9 +316,14 @@ function place(spec,s){
   return {ox,oy,dw,dh,mx,aw,ah};
 }
 // ---------- 가로로 긴 규격: 글자·제품을 한 줄로 나란히 배치 ----------
-const ROW_MAX_HEIGHT=120;                   // 세로가 이 값 이하인 규격만 한 줄 배치 대상 (100px 규격 + 720x119)
+const LEAD_GLYPH_PX=26;                     // 한 줄 배치에서 왼쪽 문구 한 줄의 목표 글자 높이(px)
+const ROW_MAX_HEIGHT=120;                  // 세로가 이 값 이하인 규격만 한 줄 배치 대상 (100px 규격 + 720x119)
 function wideSpec(spec){return spec.h<=ROW_MAX_HEIGHT;}
 function rowEligible(spec){return wideSpec(spec)&&AUTO.uniform&&AUTO.blocks.length>=2;}
+// 세로로 긴 규격(팝업형): 문구 - 맘스팩 - 선물을 위에서 아래로 가운데 정렬
+function stackEligible(spec){return spec.w/spec.h<1.3&&AUTO.uniform&&AUTO.roles.includes('head')&&AUTO.roles.includes('prod');}
+function blockLayoutOf(spec){return stackEligible(spec)?'stack':(rowEligible(spec)?'row':null);}
+function isBlockLayout(s){return s.layout==='row'||s.layout==='stack';}
 function rowLayout(spec,s){
   const W=spec.w,H=spec.h,mx=spec.mx||0;
   const sidePad=Math.max(8,Math.round(W*0.02)),vpad=Math.max(6,Math.round(H*0.08));
@@ -342,12 +347,22 @@ function rowLayout(spec,s){
     if(pi>0)ov=badge.sw*bk*0.3;                                    // 왼쪽으로 튀어나오는 만큼 글자 폭에서 뺌
   }
   const texts=bl.filter((b,i)=>i!==pi);
-  let st=1;
+  let st=1;const kOf=new Map();
   if(texts.length){
     const tw=texts.reduce((a,b)=>a+b.sw,0),thmax=Math.max(...texts.map(b=>b.sh));
     st=Math.max(0.01,Math.min((A-P.sw*sp-g*(n-1)-ov)/tw,Hh/thmax)); // 글자는 남은 폭을 최대한 사용
+    // 왼쪽 문구(작은 글씨)는 글자 높이가 LEAD_GLYPH_PX 이상 되도록 우선해서 키우고, 큰 글씨(맘스팩)가 나머지 폭을 씀
+    const lead=texts.find(b=>AUTO.roles[b.idx]==='text'&&AUTO.lineH[b.idx]>0);
+    const others=texts.filter(b=>b!==lead);
+    if(lead&&others.length){
+      const sl=Math.min(Hh/lead.sh,Math.max(st,LEAD_GLYPH_PX/AUTO.lineH[lead.idx]),st*1.5);
+      const so=Math.max(0.01,Math.min((A-P.sw*sp-g*(n-1)-ov-lead.sw*sl)/others.reduce((a,b)=>a+b.sw,0),Hh/Math.max(...others.map(b=>b.sh))));
+      kOf.set(lead,sl);others.forEach(b=>kOf.set(b,so));
+    }
   }
-  bl.forEach((b,i)=>{b.k=i===pi?sp:st;b.dw=b.sw*b.k;b.dh=b.sh*b.k;b.prod=i===pi;});
+  bl.forEach((b,i)=>{b.k=i===pi?sp:(kOf.get(b)||st);b.dw=b.sw*b.k;b.dh=b.sh*b.k;b.prod=i===pi;});
+  const leadB=bl.find(b=>AUTO.roles[b.idx]==='text'&&AUTO.lineH[b.idx]>0);
+  const leadPx=leadB?AUTO.lineH[leadB.idx]*leadB.k:999;
   const total=bl.reduce((a,b)=>a+b.dw,0);
   const gapE=n>1?Math.min(Math.max(g,(A-total)/(n-1)),A*0.12):0;
   const rowW=total+gapE*(n-1);
@@ -360,7 +375,42 @@ function rowLayout(spec,s){
     badge.dx=Math.max(2,bl[pi].dx-ov);badge.dy=Math.max(2,bl[pi].dy-badge.dh*0.15);
     bl.push(badge);                                                // 마지막에 그려서 제품 위에 겹침
   }
-  return {bl,textH,side:Math.round(mx+sidePad+(A-rowW)/2)};
+  return {bl,textH,leadPx,side:Math.round(mx+sidePad+(A-rowW)/2)};
+}
+function stackLayout(spec,s){
+  const W=spec.w,H=spec.h,mx=spec.mx||0;
+  const padX=Math.round(W*0.06),padY=Math.round(H*0.05),A=W-2*mx-2*padX,Hh=H-2*padY;
+  const iw=IM.width,ih=IM.height,px=Math.round(iw*0.006),py=Math.round(ih*0.006);
+  const all=AUTO.blocks.map((b,idx)=>{
+    const sx=Math.max(0,Math.round(b[0]*iw)-px),sy=Math.max(0,Math.round(b[1]*ih)-py);
+    const ex=Math.min(iw,Math.round(b[2]*iw)+px),ey=Math.min(ih,Math.round(b[3]*ih)+py);
+    return {idx,sx,sy,sw:ex-sx,sh:ey-sy};
+  }).filter(b=>!(s&&s.skip&&s.skip.includes(b.idx)));
+  const badge=all.find(b=>AUTO.roles[b.idx]==='badge')||null;     // 말풍선: 선물 오른쪽 위에 겹침
+  const prod=all.find(b=>AUTO.roles[b.idx]==='prod')||null;
+  const flow=all.filter(b=>b!==badge&&b!==prod);
+  if(prod)flow.push(prod);                                         // 위에서부터 문구 → 맘스팩 → 선물
+  if(!flow.length)return {bl:[],textH:999,leadPx:999,side:0};
+  const cap={text:0.5,head:0.62,prod:0.55,extra:0.4},n=flow.length,gap=Math.round(H*0.025);
+  flow.forEach(b=>{b.k=(cap[AUTO.roles[b.idx]]||0.4)*A/b.sw;b.prod=b===prod;});
+  const sum0=flow.reduce((a,b)=>a+b.sh*b.k,0);
+  let m=(Hh-gap*(n-1))/sum0;                                       // 높이에 맞게 전체를 줄이거나(여유 있으면 최대 1.25배) 키움
+  m=Math.min(m,1.25,0.9*A/Math.max(...flow.map(b=>b.sw*b.k)));
+  flow.forEach(b=>{b.k*=m;b.dw=b.sw*b.k;b.dh=b.sh*b.k;});
+  const used=flow.reduce((a,b)=>a+b.dh,0);
+  const gapE=n>1?Math.min(gap*3,Math.max(gap,(Hh-used)/(n-1))):0;
+  let y=padY+(Hh-(used+gapE*(n-1)))/2;
+  for(const b of flow){b.dx=mx+(W-2*mx-b.dw)/2;b.dy=y;y+=b.dh+gapE;}
+  const bl=[...flow];
+  if(badge&&prod){
+    const bk=Math.min(0.36*prod.dw/badge.sw,0.2*W/badge.sw);
+    badge.k=bk;badge.dw=badge.sw*bk;badge.dh=badge.sh*bk;
+    badge.dx=Math.min(prod.dx+prod.dw*0.85,W-mx-padX*0.5-badge.dw);
+    badge.dy=Math.max(2,prod.dy-badge.dh*0.1);
+    bl.push(badge);
+  }
+  const leadB=flow.find(b=>AUTO.roles[b.idx]==='text'&&AUTO.lineH[b.idx]>0);
+  return {bl,textH:999,leadPx:leadB?AUTO.lineH[leadB.idx]*leadB.k:999,side:0};
 }
 // 잘라낸 영역 안에 들어온 다른 덩어리(예: 뺀 말풍선의 꼬리)는 배경색으로 지움
 function cleanCrop(b){
@@ -383,7 +433,7 @@ function cleanCrop(b){
 function paintRow(c,spec,s){
   const g=c.getContext('2d');
   g.imageSmoothingQuality='high';
-  const L=rowLayout(spec,s);
+  const L=s.layout==='stack'?stackLayout(spec,s):rowLayout(spec,s);
   for(const b of L.bl)g.drawImage(cleanCrop(b),0,0,b.sw,b.sh,b.dx,b.dy,b.dw,b.dh);
   return {row:true,L};
 }
@@ -391,7 +441,7 @@ function paint(c,spec,s){
   c.width=spec.w;c.height=spec.h;
   const g=c.getContext('2d');
   g.fillStyle=s.bg;g.fillRect(0,0,spec.w,spec.h);
-  if(s.layout==='row')return paintRow(c,spec,s);
+  if(isBlockLayout(s))return paintRow(c,spec,s);
   const p=place(spec,s);
   g.save();g.beginPath();g.rect(p.mx,0,p.aw,p.ah);g.clip();
   g.imageSmoothingQuality='high';g.drawImage(IM,p.ox,p.oy,p.dw,p.dh);g.restore();
@@ -399,8 +449,9 @@ function paint(c,spec,s){
 }
 function check(spec,s,p){
   const out=[];
-  if(s.layout==='row'){
+  if(isBlockLayout(s)){
     const L=p.L;
+    if(L.leadPx<20)out.push(`왼쪽 문구 글자가 약 ${Math.round(L.leadPx)}px로 작아 읽기 어려울 수 있어요. 일부 요소를 빼 보세요.`);
     if(L.textH<24)out.push(`글자 영역이 ${Math.round(L.textH)}px로 작아 읽기 어려울 수 있어요.`);
     return {issues:out,vis:1,empty:0};
   }
@@ -442,7 +493,10 @@ async function encode(spec,c){
 // ---------- 규격별 처리 ----------
 function initState(i){
   const spec=SPECS[i];
-  const s={fit:'cover',zoom:1,cx:AUTO.cx,cy:AUTO.cy,bg:AUTO.bg,edited:false,skip:[...AUTO.autoSkip],layout:rowEligible(spec)?'row':'fit'};
+  const kind=blockLayoutOf(spec);
+  // 한 줄 배치는 말풍선도 뺌, 세로 배치(팝업형)는 말풍선을 선물 위에 겹쳐 넣고 버튼만 뺌
+  const skip=kind==='stack'?AUTO.autoSkip.filter(i=>AUTO.roles[i]!=='badge'):[...AUTO.autoSkip];
+  const s={fit:'cover',zoom:1,cx:AUTO.cx,cy:AUTO.cy,bg:AUTO.bg,edited:false,skip,layout:kind||'fit'};
   if(s.layout==='fit'){
     if(AUTO.uniform){
       // 꽉 채웠을 때 내용이 가장자리에 붙거나 잘리면 "여백 확보"로 시작
@@ -465,6 +519,11 @@ async function process(i){
     if(!s.edited&&AUTO.autoSkip.length)notes.unshift(`작은 요소(말풍선·버튼 등) ${AUTO.autoSkip.length}개는 뺐습니다. [수정]에서 다시 넣을 수 있어요.`);
     if(AUTO.roles.includes('badge')&&!s.skip.includes(AUTO.roles.indexOf('badge')))notes.unshift('말풍선은 이미지 왼쪽 위에 겹쳐 놓았습니다.');
     notes.unshift('가로 한 줄 배치: 글자와 제품을 나란히 놓고 양쪽 여백을 최소로 했습니다.');
+  }
+  else if(s.layout==='stack'){
+    notes.unshift('세로 배치: 문구, 맘스팩, 선물을 위에서 아래로 가운데 정렬했습니다.');
+    if(!s.edited&&s.skip.length)notes.push(`작은 요소(버튼 등) ${s.skip.length}개는 뺐습니다. [수정]에서 다시 넣을 수 있어요.`);
+    if(AUTO.roles.includes('badge')&&!s.skip.includes(AUTO.roles.indexOf('badge')))notes.push('말풍선은 선물 오른쪽 위에 겹쳐 놓았습니다.');
   }
   else if(wideSpec(spec)&&!s.edited){
     if(!AUTO.uniform)notes.unshift('배경이 단색이 아니어서 한 줄 배치를 쓰지 못했습니다.');
@@ -570,12 +629,14 @@ function openEditor(i){
   $('mTitle').textContent=`${BRANDS[spec.b]} · ${spec.name} (${spec.w}x${spec.h})`;
   $('zoom').value=Math.round(E.s.zoom*100);$('zv').textContent=$('zoom').value;
   $('mfit').value=E.s.fit;$('mbg').value=E.s.bg;
-  $('layBox').style.display=rowEligible(spec)?'':'none';
-  $('mlay').value=E.s.layout;buildBlk(rowEligible(spec));syncCtl();
+  const kind=blockLayoutOf(spec);
+  $('layBox').style.display=kind?'':'none';
+  $('mlay').innerHTML=(kind==='stack'?'<option value="stack">세로 배치 (문구·맘스팩·선물을 가운데 정렬)</option>':'<option value="row">한 줄 배치 (글자·제품을 나란히, 양쪽 여백 최소)</option>')+'<option value="fit">원본 그대로 줄이기</option>';
+  $('mlay').value=E.s.layout;buildBlk(!!kind);syncCtl();
   $('modal').style.display='flex';repaintE();
 }
 function syncCtl(){
-  const row=E.s.layout==='row';
+  const row=isBlockLayout(E.s);
   $('fitBox').style.display=row?'none':'';
   $('blkBox').style.display=row?'':'none';
   $('mcv').style.cursor=row?'default':'grab';
@@ -608,7 +669,7 @@ $('mfit').onchange=e=>{E.s.fit=e.target.value;repaintE();};
 $('mlay').onchange=e=>{E.s.layout=e.target.value;syncCtl();repaintE();};
 $('mbg').oninput=e=>{E.s.bg=e.target.value;repaintE();};
 $('mbgAuto').onclick=()=>{E.s.bg=AUTO.bg;$('mbg').value=AUTO.bg;repaintE();};
-$('mReset').onclick=()=>{const i=E.i;initState(i);E.s={...S[i],skip:[...S[i].skip]};buildBlk(rowEligible(SPECS[i]));$('zoom').value=100;$('zv').textContent=100;$('mfit').value=E.s.fit;$('mbg').value=E.s.bg;$('mlay').value=E.s.layout;syncCtl();repaintE();};
+$('mReset').onclick=()=>{const i=E.i;initState(i);E.s={...S[i],skip:[...S[i].skip]};buildBlk(!!blockLayoutOf(SPECS[i]));$('zoom').value=100;$('zv').textContent=100;$('mfit').value=E.s.fit;$('mbg').value=E.s.bg;$('mlay').value=E.s.layout;syncCtl();repaintE();};
 $('mCancel').onclick=()=>{$('modal').style.display='none';E=null;};
 $('mOk').onclick=async()=>{
   const i=E.i;S[i]={...E.s,edited:true};
@@ -619,7 +680,7 @@ $('mOk').onclick=async()=>{
   const cv=$('mcv');let drag=null;
   cv.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing';};
   cv.onpointermove=e=>{
-    if(!drag||!E||E.s.layout==='row')return;
+    if(!drag||!E||isBlockLayout(E.s))return;
     const k=cv.clientWidth/cv.width,dx=(e.clientX-drag.x)/k,dy=(e.clientY-drag.y)/k;
     drag={x:e.clientX,y:e.clientY};
     E.s.cx=Math.min(1,Math.max(0,E.s.cx-dx/E.p.dw));
