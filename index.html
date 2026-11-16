@@ -154,13 +154,22 @@ button:disabled{opacity:.45;cursor:default}
     </div>
     <div class="ctl">
       <h3>수정</h3>
-      <label>확대 <span id="zv">100</span>%</label>
-      <input type="range" id="zoom" min="100" max="300" value="100">
-      <label>맞추는 방식</label>
-      <select id="mfit">
-        <option value="cover">꽉 채우기 (넘치는 부분은 잘림)</option>
-        <option value="contain">전체 보이기 (남는 곳은 배경색)</option>
-      </select>
+      <div id="layBox">
+        <label>배치 방식 (가로로 긴 규격)</label>
+        <select id="mlay">
+          <option value="row">한 줄 배치 (글자·제품을 나란히, 양쪽 여백 최소)</option>
+          <option value="fit">원본 그대로 줄이기</option>
+        </select>
+      </div>
+      <div id="fitBox">
+        <label>확대 <span id="zv">100</span>%</label>
+        <input type="range" id="zoom" min="100" max="300" value="100">
+        <label>맞추는 방식</label>
+        <select id="mfit">
+          <option value="cover">꽉 채우기 (넘치는 부분은 잘림)</option>
+          <option value="contain">전체 보이기 (남는 곳은 배경색)</option>
+        </select>
+      </div>
       <label>배경색 (여백·좌우 단색 영역)</label>
       <div style="display:flex;gap:8px"><input type="color" id="mbg" style="flex:1;height:38px;border:1px solid #c9cfda;border-radius:8px;padding:2px"><button id="mbgAuto">원본에서 자동</button></div>
       <div style="display:flex;gap:8px;margin-top:28px">
@@ -205,18 +214,32 @@ function analyze(im){
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(x<2||y<2||x>=w-2||y>=h-2){const i=(y*w+x)*4;ring.push([d[i],d[i+1],d[i+2]]);}}
   const med=k=>{const a=ring.map(p=>p[k]).sort((p,q)=>p-q);return a[a.length>>1];};
   const bg=[med(0),med(1),med(2)];
-  const colN=new Array(w).fill(0),rowN=new Array(h).fill(0);let cnt=0;
+  const uniform=ring.filter(p=>Math.abs(p[0]-bg[0])+Math.abs(p[1]-bg[1])+Math.abs(p[2]-bg[2])<=30).length/ring.length>=0.95;
+  const colN=new Array(w).fill(0),rowN=new Array(h).fill(0),mask=new Uint8Array(w*h);let cnt=0;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
-    if(Math.abs(d[i]-bg[0])+Math.abs(d[i+1]-bg[1])+Math.abs(d[i+2]-bg[2])>60){colN[x]++;rowN[y]++;cnt++;}}
-  let bbox=[0,0,1,1];
+    if(Math.abs(d[i]-bg[0])+Math.abs(d[i+1]-bg[1])+Math.abs(d[i+2]-bg[2])>60){colN[x]++;rowN[y]++;cnt++;mask[y*w+x]=1;}}
+  let bbox=[0,0,1,1],blocks=[];
   if(cnt>w*h*0.01&&cnt<w*h*0.97){
     const tc=Math.max(1,h*0.01),tr=Math.max(1,w*0.01);
     let x0=colN.findIndex(v=>v>=tc),x1=w-1-[...colN].reverse().findIndex(v=>v>=tc);
     let y0=rowN.findIndex(v=>v>=tr),y1=h-1-[...rowN].reverse().findIndex(v=>v>=tr);
     if(x0>=0&&y0>=0&&x1>x0&&y1>y0)bbox=[x0/w,y0/h,(x1+1)/w,(y1+1)/h];
+    // 좌우로 떨어진 덩어리(글자, 제품 등)를 나눔
+    const thr=Math.max(1,h*0.005),minGap=Math.max(3,Math.round(w*0.025));
+    const segs=[];let st=-1,last=-1;
+    for(let x=0;x<w;x++){
+      if(colN[x]>=thr){ if(st<0)st=x; else if(x-last>minGap){segs.push([st,last]);st=x;} last=x; }
+    }
+    if(st>=0)segs.push([st,last]);
+    for(const [a,b] of segs){
+      let ya=-1,yb=-1;
+      for(let y=0;y<h;y++){let any=false;for(let x=a;x<=b;x++){if(mask[y*w+x]){any=true;break;}}if(any){if(ya<0)ya=y;yb=y;}}
+      if(ya<0||(b-a+1)*(yb-ya+1)<0.002*w*h)continue;
+      blocks.push([a/w,ya/h,(b+1)/w,(yb+1)/h]);
+    }
   }
   const hex='#'+bg.map(v=>v.toString(16).padStart(2,'0')).join('');
-  return {bbox,bg:hex,cx:(bbox[0]+bbox[2])/2,cy:(bbox[1]+bbox[3])/2};
+  return {bbox,blocks,uniform,bg:hex,cx:(bbox[0]+bbox[2])/2,cy:(bbox[1]+bbox[3])/2};
 }
 
 // ---------- 배치 계산·그리기 ----------
@@ -229,10 +252,47 @@ function place(spec,s){
   oy=dh>=ah?Math.min(0,Math.max(ah-dh,oy)):(ah-dh)/2;
   return {ox,oy,dw,dh,mx,aw,ah};
 }
+// ---------- 가로로 긴 규격: 글자·제품을 한 줄로 나란히 배치 ----------
+const ROW_MIN_RATIO=3;                      // 가로/세로 비율이 이 이상이면 한 줄 배치 대상
+function wideSpec(spec){return spec.w/spec.h>=ROW_MIN_RATIO;}
+function rowEligible(spec){return wideSpec(spec)&&AUTO.uniform&&AUTO.blocks.length>=2;}
+function rowLayout(spec){
+  const W=spec.w,H=spec.h,mx=spec.mx||0;
+  const sidePad=Math.max(8,Math.round(W*0.02)),vpad=Math.max(6,Math.round(H*0.08));
+  const A=W-2*mx-2*sidePad,Hh=H-2*vpad,g=Math.max(8,Math.round(W*0.02));
+  const iw=IM.width,ih=IM.height,px=Math.round(iw*0.006),py=Math.round(ih*0.006);
+  const bl=AUTO.blocks.map(b=>{
+    const sx=Math.max(0,Math.round(b[0]*iw)-px),sy=Math.max(0,Math.round(b[1]*ih)-py);
+    const ex=Math.min(iw,Math.round(b[2]*iw)+px),ey=Math.min(ih,Math.round(b[3]*ih)+py);
+    return {sx,sy,sw:ex-sx,sh:ey-sy};
+  });
+  let pi=0;bl.forEach((b,i)=>{if(b.sh>bl[pi].sh)pi=i;});         // 가장 키가 큰 덩어리 = 제품
+  const n=bl.length,P=bl[pi];
+  let sp=Hh/P.sh;if(P.sw*sp>A*0.4)sp=A*0.4/P.sw;                   // 제품은 높이에 맞추되 폭의 40% 이내
+  const texts=bl.filter((b,i)=>i!==pi);
+  const tw=texts.reduce((a,b)=>a+b.sw,0),thmax=Math.max(...texts.map(b=>b.sh));
+  const st=Math.max(0.01,Math.min((A-P.sw*sp-g*(n-1))/tw,Hh/thmax)); // 글자는 남은 폭을 최대한 사용
+  bl.forEach((b,i)=>{b.k=i===pi?sp:st;b.dw=b.sw*b.k;b.dh=b.sh*b.k;b.prod=i===pi;});
+  const total=bl.reduce((a,b)=>a+b.dw,0);
+  const gapE=n>1?Math.min(Math.max(g,(A-total)/(n-1)),A*0.12):0;
+  const rowW=total+gapE*(n-1);
+  let x=mx+sidePad+(A-rowW)/2;
+  for(const b of bl){b.dx=x;b.dy=(H-b.dh)/2;x+=b.dw+gapE;}
+  const textH=Math.max(...bl.filter(b=>!b.prod).map(b=>b.dh));
+  return {bl,textH,side:Math.round(mx+sidePad+(A-rowW)/2)};
+}
+function paintRow(c,spec,s){
+  const g=c.getContext('2d');
+  g.imageSmoothingQuality='high';
+  const L=rowLayout(spec);
+  for(const b of L.bl)g.drawImage(IM,b.sx,b.sy,b.sw,b.sh,b.dx,b.dy,b.dw,b.dh);
+  return {row:true,L};
+}
 function paint(c,spec,s){
   c.width=spec.w;c.height=spec.h;
   const g=c.getContext('2d');
   g.fillStyle=s.bg;g.fillRect(0,0,spec.w,spec.h);
+  if(s.layout==='row')return paintRow(c,spec,s);
   const p=place(spec,s);
   g.save();g.beginPath();g.rect(p.mx,0,p.aw,p.ah);g.clip();
   g.imageSmoothingQuality='high';g.drawImage(IM,p.ox,p.oy,p.dw,p.dh);g.restore();
@@ -240,6 +300,11 @@ function paint(c,spec,s){
 }
 function check(spec,s,p){
   const out=[];
+  if(s.layout==='row'){
+    const L=p.L;
+    if(L.textH<24)out.push(`글자 영역이 ${Math.round(L.textH)}px로 작아 읽기 어려울 수 있어요.`);
+    return {issues:out,vis:1,empty:0};
+  }
   const [bx0,by0,bx1,by1]=AUTO.bbox;
   const wx0=(p.mx-p.ox)/p.dw,wx1=(p.mx+p.aw-p.ox)/p.dw,wy0=-p.oy/p.dh,wy1=(p.ah-p.oy)/p.dh;
   const ix=Math.max(0,Math.min(bx1,wx1)-Math.max(bx0,wx0)),iy=Math.max(0,Math.min(by1,wy1)-Math.max(by0,wy0));
@@ -278,9 +343,9 @@ async function encode(spec,c){
 // ---------- 규격별 처리 ----------
 function initState(i){
   const spec=SPECS[i];
-  const s={fit:'cover',zoom:1,cx:AUTO.cx,cy:AUTO.cy,bg:AUTO.bg,edited:false};
+  const s={fit:'cover',zoom:1,cx:AUTO.cx,cy:AUTO.cy,bg:AUTO.bg,edited:false,layout:rowEligible(spec)?'row':'fit'};
   // 꽉 채우면 내용이 잘리는 규격은 처음부터 "전체 보이기"로 시작 (잘림 방지)
-  if(check(spec,s,place(spec,s)).vis<0.97)s.fit='contain';
+  if(s.layout==='fit'&&check(spec,s,place(spec,s)).vis<0.97)s.fit='contain';
   S[i]=s;
 }
 async function process(i){
@@ -291,7 +356,12 @@ async function process(i){
   const {blob,notes}=await encode(spec,c);
   const kb=blob.size/1024,issues=[...ck.issues];
   if(spec.kb&&kb>spec.kb)issues.push(`용량 초과: ${kb.toFixed(0)}KB (제한 ${spec.kb}KB 미만)`);
-  if(s.fit==='contain'&&!s.edited&&ck.empty>0.02)notes.unshift('내용이 잘리지 않도록 전체가 보이게 맞췄습니다. 남는 곳은 배경색입니다.');
+  if(s.layout==='row')notes.unshift('가로 한 줄 배치: 글자와 제품을 나란히 놓고 양쪽 여백을 최소로 했습니다.');
+  else if(wideSpec(spec)&&!s.edited){
+    if(!AUTO.uniform)notes.unshift('배경이 단색이 아니어서 한 줄 배치를 쓰지 못했습니다.');
+    else if(AUTO.blocks.length<2)notes.unshift('글자와 제품이 붙어 있어 한 줄 배치를 쓰지 못했습니다.');
+  }
+  if(s.layout==='fit'&&s.fit==='contain'&&!s.edited&&ck.empty>0.02)notes.unshift('내용이 잘리지 않도록 전체가 보이게 맞췄습니다. 남는 곳은 배경색입니다.');
   R[i]={canvas:c,blob,kb,issues,notes,status:issues.length?'check':(s.edited?'edited':'ok')};
 }
 const badgeText={ok:'정상',check:'확인 필요',edited:'수정 완료'};
@@ -390,8 +460,11 @@ function openEditor(i){
   $('mTitle').textContent=`${BRANDS[spec.b]} · ${spec.name} (${spec.w}x${spec.h})`;
   $('zoom').value=Math.round(E.s.zoom*100);$('zv').textContent=$('zoom').value;
   $('mfit').value=E.s.fit;$('mbg').value=E.s.bg;
+  $('layBox').style.display=rowEligible(spec)?'':'none';
+  $('mlay').value=E.s.layout;syncCtl();
   $('modal').style.display='flex';repaintE();
 }
+function syncCtl(){$('fitBox').style.display=E.s.layout==='row'?'none':'';$('mcv').style.cursor=E.s.layout==='row'?'default':'grab';}
 function repaintE(){
   const spec=SPECS[E.i],p=paint($('mcv'),spec,E.s),ck=check(spec,E.s,p);
   const w=$('mWhy');
@@ -401,9 +474,10 @@ function repaintE(){
 }
 $('zoom').oninput=e=>{E.s.zoom=e.target.value/100;$('zv').textContent=e.target.value;repaintE();};
 $('mfit').onchange=e=>{E.s.fit=e.target.value;repaintE();};
+$('mlay').onchange=e=>{E.s.layout=e.target.value;syncCtl();repaintE();};
 $('mbg').oninput=e=>{E.s.bg=e.target.value;repaintE();};
 $('mbgAuto').onclick=()=>{E.s.bg=AUTO.bg;$('mbg').value=AUTO.bg;repaintE();};
-$('mReset').onclick=()=>{const i=E.i;initState(i);E.s={...S[i]};$('zoom').value=100;$('zv').textContent=100;$('mfit').value=E.s.fit;$('mbg').value=E.s.bg;repaintE();};
+$('mReset').onclick=()=>{const i=E.i;initState(i);E.s={...S[i]};$('zoom').value=100;$('zv').textContent=100;$('mfit').value=E.s.fit;$('mbg').value=E.s.bg;$('mlay').value=E.s.layout;syncCtl();repaintE();};
 $('mCancel').onclick=()=>{$('modal').style.display='none';E=null;};
 $('mOk').onclick=async()=>{
   const i=E.i;S[i]={...E.s,edited:true};
@@ -414,7 +488,7 @@ $('mOk').onclick=async()=>{
   const cv=$('mcv');let drag=null;
   cv.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing';};
   cv.onpointermove=e=>{
-    if(!drag||!E)return;
+    if(!drag||!E||E.s.layout==='row')return;
     const k=cv.clientWidth/cv.width,dx=(e.clientX-drag.x)/k,dy=(e.clientY-drag.y)/k;
     drag={x:e.clientX,y:e.clientY};
     E.s.cx=Math.min(1,Math.max(0,E.s.cx-dx/E.p.dw));
