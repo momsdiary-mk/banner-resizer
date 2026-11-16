@@ -253,8 +253,8 @@ function place(spec,s){
   return {ox,oy,dw,dh,mx,aw,ah};
 }
 // ---------- 가로로 긴 규격: 글자·제품을 한 줄로 나란히 배치 ----------
-const ROW_MIN_RATIO=3;                      // 가로/세로 비율이 이 이상이면 한 줄 배치 대상
-function wideSpec(spec){return spec.w/spec.h>=ROW_MIN_RATIO;}
+const ROW_MAX_HEIGHT=120;                   // 세로가 이 값 이하인 규격만 한 줄 배치 대상 (100px 규격 + 720x119)
+function wideSpec(spec){return spec.h<=ROW_MAX_HEIGHT;}
 function rowEligible(spec){return wideSpec(spec)&&AUTO.uniform&&AUTO.blocks.length>=2;}
 function rowLayout(spec){
   const W=spec.w,H=spec.h,mx=spec.mx||0;
