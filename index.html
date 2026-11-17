@@ -98,6 +98,19 @@ button:disabled{opacity:.45;cursor:default}
 #modal .ctl input[type=range]{width:100%}
 #modal select{width:100%;padding:9px;border:1px solid #c9cfda;border-radius:8px;font:inherit;font-size:14px}
 .hint{font-size:13px;color:var(--sub);margin-top:10px;text-align:center}
+.cv canvas{cursor:zoom-in}
+#view{display:none;position:fixed;inset:0;background:rgba(16,24,40,.72);z-index:20;align-items:center;justify-content:center;padding:16px}
+#view .vbox{background:#fff;border-radius:14px;width:100%;max-width:1200px;max-height:96vh;display:flex;flex-direction:column;overflow:hidden}
+#view .vhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+#view .vhead b{font-size:16px}
+#view .vz{display:flex;gap:4px}
+#view .vz button.on{background:var(--tx);color:#fff;border-color:var(--tx)}
+#view select{padding:7px 8px;border:1px solid #c9cfda;border-radius:8px;font:inherit;font-size:14px}
+#view .vbody{flex:1;overflow:auto;background:#eef0f4;padding:24px;min-height:200px}
+#view .vwrap{position:relative;display:inline-block;line-height:0;outline:1px solid #b9bfcc;background:#fff}
+#view canvas#vcv{display:block;cursor:crosshair}
+#view canvas#vlens{display:none;position:absolute;width:180px;height:180px;border-radius:50%;border:3px solid #2457c5;box-shadow:0 4px 14px rgba(0,0,0,.35);pointer-events:none;background:#fff}
+#view .vinfo{padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}
 @media(max-width:900px){.tiles{grid-template-columns:repeat(2,1fr)}.hin,main{padding-left:16px;padding-right:16px}}
 </style>
 </head>
@@ -137,6 +150,7 @@ button:disabled{opacity:.45;cursor:default}
       <label class="chip on" data-b="moa"><input type="checkbox" checked>모아베베</label>
       <label class="chip" id="onlyChk"><input type="checkbox">확인 필요만 보기</label>
       <span class="sp"></span>
+      <label class="chip" id="hi2"><input type="checkbox">2배 고해상도 파일도 포함</label>
       <button id="zipOk">정상만 ZIP 받기</button>
       <button id="zipAll" class="pri">전체 ZIP 받기</button>
     </div>
@@ -182,6 +196,26 @@ button:disabled{opacity:.45;cursor:default}
         <button id="mCancel">취소</button><button id="mOk" class="pri">적용</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="view">
+  <div class="vbox">
+    <div class="vhead">
+      <b id="vTitle"></b><span class="sp"></span>
+      <select id="vSrc">
+        <option value="1">저장 파일 (규격 크기)</option>
+        <option value="2">고해상도 (2배)</option>
+      </select>
+      <div class="vz" id="vZ">
+        <button data-z="1">100%</button><button data-z="2">200%</button><button data-z="3">300%</button><button data-z="4">400%</button>
+      </div>
+      <label class="chip" id="vLens"><input type="checkbox">돋보기 (4배)</label>
+      <button id="vSave2">2배 파일 저장</button>
+      <button id="vClose" class="pri">닫기</button>
+    </div>
+    <div class="vbody" id="vBody"><div class="vwrap" id="vWrap"><canvas id="vcv"></canvas><canvas id="vlens" width="180" height="180"></canvas></div></div>
+    <div class="vinfo" id="vInfo"></div>
   </div>
 </div>
 
@@ -430,23 +464,45 @@ function cleanCrop(b){
   }
   return AUTO._clean[b.idx]=c;
 }
+// 고화질 축소: 목표보다 2배 넘게 크면 절반씩 줄여가며 그려서 글자 가장자리가 거칠어지지 않게 함
+function drawHQ(g,src,sx,sy,sw,sh,dx,dy,dw,dh){
+  const k=g.getTransform().a,tw=Math.max(1,dw*k);
+  let cur=src,cx=sx,cy=sy,cw=sw,ch=sh;
+  while(cw>=tw*2&&cw>=4&&ch>=4){
+    const t=document.createElement('canvas');
+    t.width=Math.max(1,Math.round(cw/2));t.height=Math.max(1,Math.round(ch/2));
+    const tg=t.getContext('2d');tg.imageSmoothingQuality='high';
+    tg.drawImage(cur,cx,cy,cw,ch,0,0,t.width,t.height);
+    cur=t;cx=0;cy=0;cw=t.width;ch=t.height;
+  }
+  g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  g.drawImage(cur,cx,cy,cw,ch,dx,dy,dw,dh);
+}
 function paintRow(c,spec,s){
   const g=c.getContext('2d');
-  g.imageSmoothingQuality='high';
   const L=s.layout==='stack'?stackLayout(spec,s):rowLayout(spec,s);
-  for(const b of L.bl)g.drawImage(cleanCrop(b),0,0,b.sw,b.sh,b.dx,b.dy,b.dw,b.dh);
+  for(const b of L.bl)drawHQ(g,cleanCrop(b),0,0,b.sw,b.sh,b.dx,b.dy,b.dw,b.dh);
   return {row:true,L};
 }
-function paint(c,spec,s){
-  c.width=spec.w;c.height=spec.h;
+// k: 1이면 규격 크기 그대로, 2이면 가로·세로 2배의 고해상도 파일
+function paint(c,spec,s,k=1){
+  c.width=Math.round(spec.w*k);c.height=Math.round(spec.h*k);
   const g=c.getContext('2d');
+  g.setTransform(k,0,0,k,0,0);
   g.fillStyle=s.bg;g.fillRect(0,0,spec.w,spec.h);
   if(isBlockLayout(s))return paintRow(c,spec,s);
   const p=place(spec,s);
   g.save();g.beginPath();g.rect(p.mx,0,p.aw,p.ah);g.clip();
-  g.imageSmoothingQuality='high';g.drawImage(IM,p.ox,p.oy,p.dw,p.dh);g.restore();
+  drawHQ(g,IM,0,0,IM.width,IM.height,p.ox,p.oy,p.dw,p.dh);g.restore();
   return p;
 }
+// 2배 고해상도 파일 (필요할 때 한 번만 만들어 둠)
+function get2x(i){
+  if(!R[i].c2){const c=document.createElement('canvas');paint(c,SPECS[i],S[i],2);R[i].c2=c;}
+  return R[i].c2;
+}
+async function blob2x(i){return blobOf(get2x(i),SPECS[i].f==='jpg'?'image/jpeg':'image/png',0.95);}
+function name2x(i){return fname(i).replace(/(\.\w+)$/,'@2x$1');}
 function check(spec,s,p){
   const out=[];
   if(isBlockLayout(s)){
@@ -531,7 +587,7 @@ async function process(i){
   }
   if(s.layout==='fit'&&s.fit==='safe'&&!s.edited)notes.unshift('내용이 가장자리에 붙지 않도록 여백을 두고 맞췄습니다. 남는 곳은 배경색입니다.');
   if(s.layout==='fit'&&s.fit==='contain'&&!s.edited&&ck.empty>0.02)notes.unshift('내용이 잘리지 않도록 전체가 보이게 맞췄습니다. 남는 곳은 배경색입니다.');
-  R[i]={canvas:c,blob,kb,issues,notes,status:issues.length?'check':(s.edited?'edited':'ok')};
+  R[i]={canvas:c,c2:null,blob,kb,issues,notes,status:issues.length?'check':(s.edited?'edited':'ok')};
 }
 const badgeText={ok:'정상',check:'확인 필요',edited:'수정 완료'};
 function verdictHTML(r){
@@ -546,7 +602,7 @@ function cardHTML(i){
   <div class="kb"><span>파일 용량 <b>${r.kb.toFixed(0)}KB</b></span><span>${spec.kb?`제한 ${spec.kb}KB 미만`:'용량 제한 없음'}</span></div>
   ${spec.kb?`<div class="kbbar"><i class="${r.kb>spec.kb?'over':''}" style="width:${pct}%"></i></div>`:''}
   <div class="verdict ${r.status}">${verdictHTML(r)}</div>
-  <div class="btns"><button data-edit="${i}">수정</button><button data-save="${i}">저장</button></div>`;
+  <div class="btns"><button data-view="${i}">크게 보기</button><button data-edit="${i}">수정</button><button data-save="${i}">저장</button></div>`;
 }
 function fillCard(i){
   const el=$('card'+i);if(!el)return;
@@ -616,9 +672,11 @@ document.querySelectorAll('.chip[data-b]').forEach(ch=>{
 $('onlyChk').querySelector('input').onchange=e=>{onlyCheck=e.target.checked;$('onlyChk').classList.toggle('on',onlyCheck);applyView();};
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
 $('grid').addEventListener('click',e=>{
-  const ed=e.target.dataset.edit,sv=e.target.dataset.save;
+  const ed=e.target.dataset.edit,sv=e.target.dataset.save,vw=e.target.dataset.view;
   if(ed!==undefined)openEditor(+ed);
   if(sv!==undefined)download(R[+sv].blob,fname(+sv));
+  if(vw!==undefined)openView(+vw);
+  if(e.target.tagName==='CANVAS'){const card=e.target.closest('.card');if(card)openView(+card.id.slice(4));}   // 미리보기를 눌러도 열림
 });
 
 // ---------- 수정 창 ----------
@@ -717,12 +775,55 @@ async function zipOf(filter,label){
   for(let i=0;i<SPECS.length;i++){
     if(!on[SPECS[i].b]||!R[i]||!filter(R[i]))continue;
     files.push({name:`${BRANDS[SPECS[i].b]}/${fname(i)}`,data:new Uint8Array(await R[i].blob.arrayBuffer())});
+    if($('hi2').querySelector('input').checked)files.push({name:`${BRANDS[SPECS[i].b]}/2배고해상도/${name2x(i)}`,data:new Uint8Array(await (await blob2x(i)).arrayBuffer())});
   }
   if(!files.length){alert('내려받을 파일이 없습니다.');return;}
   download(makeZip(files),`${$('svc').value.trim()||'company'}_${label}.zip`);
 }
 $('zipAll').onclick=()=>zipOf(()=>true,'전체');
 $('zipOk').onclick=()=>zipOf(r=>r.status!=='check','정상만');
+$('hi2').querySelector('input').onchange=e=>$('hi2').classList.toggle('on',e.target.checked);
+
+// ---------- 크게 보기 (실제 크기 · 확대 · 돋보기) ----------
+let V=null;
+function openView(i){
+  V={i,src:1,z:1,lens:false};
+  $('vSrc').value='1';$('vLens').classList.remove('on');$('vLens').querySelector('input').checked=false;
+  $('view').style.display='flex';drawView();
+}
+function drawView(){
+  const spec=SPECS[V.i],src=V.src===2?get2x(V.i):R[V.i].canvas,cv=$('vcv');
+  cv.width=src.width;cv.height=src.height;
+  cv.getContext('2d').drawImage(src,0,0);
+  const cssW=spec.w*V.z,cssH=spec.h*V.z;
+  cv.style.width=cssW+'px';cv.style.height=cssH+'px';
+  cv.style.imageRendering=cssW>src.width?'pixelated':'auto';          // 확대하면 픽셀이 그대로 보이게
+  document.querySelectorAll('#vZ button').forEach(b=>b.classList.toggle('on',+b.dataset.z===V.z));
+  $('vTitle').textContent=`${BRANDS[spec.b]} · ${spec.name} (${spec.w}x${spec.h})`;
+  $('vInfo').textContent=V.src===2
+    ?`고해상도 파일: ${src.width} x ${src.height}px (규격 크기의 2배). 제출용이 아니라 선명도 확인·보관용입니다.`
+    :`저장 파일: ${src.width} x ${src.height}px · ${spec.f.toUpperCase()} · ${R[V.i].kb.toFixed(0)}KB. 지금 화면은 ${V.z*100}%로 보고 있습니다.`;
+}
+$('vSrc').onchange=e=>{V.src=+e.target.value;drawView();};
+$('vZ').onclick=e=>{if(e.target.dataset.z){V.z=+e.target.dataset.z;drawView();}};
+$('vLens').querySelector('input').onchange=e=>{V.lens=e.target.checked;$('vLens').classList.toggle('on',V.lens);if(!V.lens)$('vlens').style.display='none';};
+$('vClose').onclick=()=>{$('view').style.display='none';V=null;};
+$('vSave2').onclick=async()=>{if(V)download(await blob2x(V.i),name2x(V.i));};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&V)$('vClose').click();});
+(function(){
+  const cv=$('vcv'),lens=$('vlens'),lg=lens.getContext('2d');
+  cv.onmousemove=e=>{
+    if(!V||!V.lens)return;
+    const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*cv.width/r.width,py=(e.clientY-r.top)*cv.height/r.height;
+    const side=45;                                  // 원본 픽셀 45개를 180px 안에 4배로 보여줌
+    lg.imageSmoothingEnabled=false;lg.fillStyle='#fff';lg.fillRect(0,0,180,180);
+    lg.drawImage(cv,px-side/2,py-side/2,side,side,0,0,180,180);
+    const wr=$('vWrap').getBoundingClientRect();
+    lens.style.left=(e.clientX-wr.left+18)+'px';lens.style.top=(e.clientY-wr.top+18)+'px';
+    lens.style.display='block';
+  };
+  cv.onmouseleave=()=>{lens.style.display='none';};
+})();
 </script>
 </body>
 </html>
