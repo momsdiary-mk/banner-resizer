@@ -233,7 +233,7 @@ const SPECS=[
  {b:'moa',name:'초기면 팝업 / 앱종료 전면',w:720,h:960,f:'png',kb:300,mx:0},
  {b:'moa',name:'영상 리스트 / 이벤트 배너',w:720,h:370,f:'png',kb:300,mx:0},
  {b:'moa',name:'영상 종료 배너',w:720,h:700,f:'png',kb:300,mx:0},
- {b:'moa',name:'알림 푸시',w:614,h:343,f:'png',kb:300,mx:0},
+ {b:'moa',name:'알림 푸시',w:614,h:343,f:'png',kb:300,mx:0,px:0.09},
  {b:'moa',name:'하단 띠 / 성장정보 띠',w:720,h:119,f:'png',kb:300,mx:0},
 ];
 const $=id=>document.getElementById(id);
@@ -339,8 +339,9 @@ function place(spec,s){
   if(s.fit==='safe'){
     // 내용(글자·제품)이 가장자리에 붙지 않도록 여백을 두고 맞춤. 남는 곳은 배경색
     const [bx0,by0,bx1,by1]=AUTO.bbox,cw=(bx1-bx0)*iw,ch=(by1-by0)*ih,pad=Math.max(8,Math.round(Math.min(aw,ah)*0.06));
-    const sc=Math.min((aw-2*pad)/cw,(ah-2*pad)/ch)*s.zoom,dw=iw*sc,dh=ih*sc;
-    return {ox:mx+aw/2-s.cx*dw,oy:ah/2-s.cy*dh,dw,dh,mx,aw,ah,pad};
+    const padX=Math.max(pad,Math.round(spec.w*(spec.px||0)));        // 좌우 여백을 따로 더 두는 규격(알림 푸시)
+    const sc=Math.min((aw-2*padX)/cw,(ah-2*pad)/ch)*s.zoom,dw=iw*sc,dh=ih*sc;
+    return {ox:mx+aw/2-s.cx*dw,oy:ah/2-s.cy*dh,dw,dh,mx,aw,ah,pad,padX};
   }
   const base=s.fit==='cover'?Math.max(aw/iw,ah/ih):Math.min(aw/iw,ah/ih);
   const sc=base*s.zoom,dw=iw*sc,dh=ih*sc;
@@ -411,6 +412,8 @@ function rowLayout(spec,s){
   }
   return {bl,textH,leadPx,side:Math.round(mx+sidePad+(A-rowW)/2)};
 }
+// 로고: 원본 위쪽(상단 35%)에 따로 놓인 작은 요소
+function isLogo(idx){const b=AUTO.blocks[idx];return AUTO.roles[idx]==='extra'&&(b[1]+b[3])/2<0.35;}
 function stackLayout(spec,s){
   const W=spec.w,H=spec.h,mx=spec.mx||0;
   const padX=Math.round(W*0.06),padY=Math.round(H*0.05),A=W-2*mx-2*padX,Hh=H-2*padY;
@@ -422,8 +425,12 @@ function stackLayout(spec,s){
   }).filter(b=>!(s&&s.skip&&s.skip.includes(b.idx)));
   const badge=all.find(b=>AUTO.roles[b.idx]==='badge')||null;     // 말풍선: 선물 오른쪽 위에 겹침
   const prod=all.find(b=>AUTO.roles[b.idx]==='prod')||null;
-  const flow=all.filter(b=>b!==badge&&b!==prod);
-  if(prod)flow.push(prod);                                         // 위에서부터 문구 → 맘스팩 → 선물
+  let flow=all.filter(b=>b!==badge&&b!==prod);
+  if(spec.w>600){                                                  // 가로 600px 넘는 팝업: 로고(별도 작은 요소)는 맨 위 가운데
+    const logos=flow.filter(b=>isLogo(b.idx));
+    flow=[...logos,...flow.filter(b=>!logos.includes(b))];
+  }
+  if(prod)flow.push(prod);                                         // 위에서부터 (로고) → 문구 → 맘스팩 → 선물
   if(!flow.length)return {bl:[],textH:999,leadPx:999,side:0};
   const cap={text:0.5,head:0.62,prod:0.55,extra:0.4},n=flow.length,gap=Math.round(H*0.025);
   flow.forEach(b=>{b.k=(cap[AUTO.roles[b.idx]]||0.4)*A/b.sw;b.prod=b===prod;});
@@ -464,8 +471,89 @@ function cleanCrop(b){
   }
   return AUTO._clean[b.idx]=c;
 }
-// 고화질 축소: 목표보다 2배 넘게 크면 절반씩 줄여가며 그려서 글자 가장자리가 거칠어지지 않게 함
+// ---------- 고화질 크기 변환 (Lanczos3 + 약한 선명화) ----------
+// 브라우저 기본 확대·축소는 글자 가장자리가 뭉개져서, 픽셀 단위로 직접 계산해 다시 그림
+const _rc=[];
+function lzW(n,tn,a){            // 목표 픽셀마다 원본 픽셀 가중치 계산
+  const sc=n/tn,fs=Math.max(1,sc),sup=a*fs,res=[];
+  for(let i=0;i<tn;i++){
+    const c=(i+0.5)*sc-0.5,l=Math.floor(c-sup),r=Math.ceil(c+sup),idx=[],w=[];let sum=0;
+    for(let j=l;j<=r;j++){
+      const x=(j-c)/fs;let v=0;
+      if(x===0)v=1;else if(x>-a&&x<a){const p=Math.PI*x;v=a*Math.sin(p)*Math.sin(p/a)/(p*p);}
+      if(v===0)continue;
+      idx.push(Math.min(n-1,Math.max(0,j)));w.push(v);sum+=v;
+    }
+    for(let q=0;q<w.length;q++)w[q]/=sum;
+    res.push({idx,w});
+  }
+  return res;
+}
+function resizeHQ(src,sx,sy,sw,sh,tw,th){
+  for(const e of _rc)if(e.src===src&&e.key===[sx,sy,sw,sh,tw,th].join())return e.c;
+  // 목표보다 3배 넘게 크면 먼저 절반씩 줄여 계산량을 줄임
+  let cur=src,cx=sx,cy=sy,cw=sw,ch=sh;
+  while(cw>=tw*3&&ch>=th*3&&cw>=8&&ch>=8){
+    const t=document.createElement('canvas');t.width=Math.round(cw/2);t.height=Math.round(ch/2);
+    const tg=t.getContext('2d');tg.imageSmoothingQuality='high';
+    tg.drawImage(cur,cx,cy,cw,ch,0,0,t.width,t.height);
+    cur=t;cx=0;cy=0;cw=t.width;ch=t.height;
+  }
+  const s0=document.createElement('canvas');s0.width=cw;s0.height=ch;
+  const sg=s0.getContext('2d',{willReadFrequently:true});sg.drawImage(cur,cx,cy,cw,ch,0,0,cw,ch);
+  const d=sg.getImageData(0,0,cw,ch).data;
+  const P=new Float32Array(cw*ch*4);                          // 투명도가 있는 그림도 번지지 않게 알파 곱한 값으로 계산
+  for(let i=0;i<d.length;i+=4){const a=d[i+3]/255;P[i]=d[i]*a;P[i+1]=d[i+1]*a;P[i+2]=d[i+2]*a;P[i+3]=d[i+3];}
+  const A=3,wx=lzW(cw,tw,A),wy=lzW(ch,th,A);
+  const T=new Float32Array(tw*ch*4);
+  for(let y=0;y<ch;y++)for(let x=0;x<tw;x++){
+    const {idx,w}=wx[x];let r=0,g=0,b=0,a=0;
+    for(let q=0;q<idx.length;q++){const o=(y*cw+idx[q])*4,v=w[q];r+=P[o]*v;g+=P[o+1]*v;b+=P[o+2]*v;a+=P[o+3]*v;}
+    const o=(y*tw+x)*4;T[o]=r;T[o+1]=g;T[o+2]=b;T[o+3]=a;
+  }
+  const O=new Float32Array(tw*th*4);
+  for(let y=0;y<th;y++){const {idx,w}=wy[y];for(let x=0;x<tw;x++){
+    let r=0,g=0,b=0,a=0;
+    for(let q=0;q<idx.length;q++){const o=(idx[q]*tw+x)*4,v=w[q];r+=T[o]*v;g+=T[o+1]*v;b+=T[o+2]*v;a+=T[o+3]*v;}
+    const o=(y*tw+x)*4;O[o]=r;O[o+1]=g;O[o+2]=b;O[o+3]=a;
+  }}
+  // 약한 선명화(언샤프 마스크): 줄이면 조금 더, 키우면 조금만
+  const amt=(tw<sw||th<sh)?0.55:0.3;
+  const B=new Float32Array(tw*th*4),B2=new Float32Array(tw*th*4);
+  for(let y=0;y<th;y++)for(let x=0;x<tw;x++){
+    const xl=Math.max(0,x-1),xr=Math.min(tw-1,x+1),o=(y*tw+x)*4,ol=(y*tw+xl)*4,orr=(y*tw+xr)*4;
+    for(let c=0;c<3;c++)B[o+c]=(O[ol+c]+2*O[o+c]+O[orr+c])/4;
+  }
+  for(let y=0;y<th;y++){const yu=Math.max(0,y-1),yd=Math.min(th-1,y+1);for(let x=0;x<tw;x++){
+    const o=(y*tw+x)*4,ou=(yu*tw+x)*4,od=(yd*tw+x)*4;
+    for(let c=0;c<3;c++)B2[o+c]=(B[ou+c]+2*B[o+c]+B[od+c])/4;
+  }}
+  const out=new ImageData(tw,th),od=out.data;
+  for(let i=0;i<O.length;i+=4){
+    const a=O[i+3];od[i+3]=a;
+    if(a<=0.5){od[i]=od[i+1]=od[i+2]=0;continue;}
+    for(let c=0;c<3;c++){
+      let v=O[i+c]+amt*(O[i+c]-B2[i+c]);
+      if(v<0)v=0;else if(v>a)v=a;
+      od[i+c]=v*255/a;
+    }
+  }
+  const rc=document.createElement('canvas');rc.width=tw;rc.height=th;rc.getContext('2d').putImageData(out,0,0);
+  _rc.push({src,key:[sx,sy,sw,sh,tw,th].join(),c:rc});if(_rc.length>24)_rc.shift();
+  return rc;
+}
 function drawHQ(g,src,sx,sy,sw,sh,dx,dy,dw,dh){
+  const m=g.getTransform(),k=m.a,tw=Math.max(1,Math.round(dw*k)),th=Math.max(1,Math.round(dh*k));
+  if(tw*th<=12e6&&sw>=1&&sh>=1){
+    const r=resizeHQ(src,Math.round(sx),Math.round(sy),Math.round(sw),Math.round(sh),tw,th);
+    g.save();g.setTransform(1,0,0,1,0,0);g.imageSmoothingEnabled=false;
+    g.drawImage(r,Math.round(dx*k+m.e),Math.round(dy*k+m.f));                 // 픽셀 경계에 딱 맞춰 그림
+    g.restore();return;
+  }
+  drawHQold(g,src,sx,sy,sw,sh,dx,dy,dw,dh);
+}
+// (아주 큰 확대 등 예외 상황용) 예전 방식
+function drawHQold(g,src,sx,sy,sw,sh,dx,dy,dw,dh){
   const k=g.getTransform().a,tw=Math.max(1,dw*k);
   let cur=src,cx=sx,cy=sy,cw=sw,ch=sh;
   while(cw>=tw*2&&cw>=4&&ch>=4){
@@ -516,7 +604,7 @@ function check(spec,s,p){
   const ix=Math.max(0,Math.min(bx1,wx1)-Math.max(bx0,wx0)),iy=Math.max(0,Math.min(by1,wy1)-Math.max(by0,wy0));
   const vis=(ix*iy)/((bx1-bx0)*(by1-by0));
   if(vis<0.97)out.push(`내용의 ${Math.round(vis*100)}%만 보입니다. 글자나 제품이 잘렸을 수 있어요.`);
-  const empty=s.fit==='safe'?1-Math.min(1,(((bx1-bx0)*p.dw+2*p.pad)*((by1-by0)*p.dh+2*p.pad))/(p.aw*p.ah)):1-Math.min(1,(p.dw*p.dh)/(p.aw*p.ah));
+  const empty=s.fit==='safe'?1-Math.min(1,(((bx1-bx0)*p.dw+2*p.padX)*((by1-by0)*p.dh+2*p.pad))/(p.aw*p.ah)):1-Math.min(1,(p.dw*p.dh)/(p.aw*p.ah));
   if((s.fit==='contain'||s.fit==='safe')&&empty>0.6)out.push(`잘리지 않게 맞췄지만 빈 여백이 ${Math.round(empty*100)}%입니다. 확대하거나 별도 배치가 필요할 수 있어요.`);
   return {issues:out,vis,empty};
 }
@@ -551,14 +639,14 @@ function initState(i){
   const spec=SPECS[i];
   const kind=blockLayoutOf(spec);
   // 한 줄 배치는 말풍선도 뺌, 세로 배치(팝업형)는 말풍선을 선물 위에 겹쳐 넣고 버튼만 뺌
-  const skip=kind==='stack'?AUTO.autoSkip.filter(i=>AUTO.roles[i]!=='badge'):[...AUTO.autoSkip];
+  const skip=kind==='stack'?AUTO.autoSkip.filter(i=>AUTO.roles[i]!=='badge'&&!(spec.w>600&&isLogo(i))):[...AUTO.autoSkip];
   const s={fit:'cover',zoom:1,cx:AUTO.cx,cy:AUTO.cy,bg:AUTO.bg,edited:false,skip,layout:kind||'fit'};
   if(s.layout==='fit'){
     if(AUTO.uniform){
       // 꽉 채웠을 때 내용이 가장자리에 붙거나 잘리면 "여백 확보"로 시작
       const p=place(spec,s),[bx0,by0,bx1,by1]=AUTO.bbox;
       const m=Math.min(p.ox+bx0*p.dw-p.mx,p.mx+p.aw-(p.ox+bx1*p.dw),p.oy+by0*p.dh,p.ah-(p.oy+by1*p.dh));
-      if(m<Math.max(10,Math.round(Math.min(p.aw,p.ah)*0.03)))s.fit='safe';
+      if(spec.px||m<Math.max(10,Math.round(Math.min(p.aw,p.ah)*0.03)))s.fit='safe';
     }else if(check(spec,s,place(spec,s)).vis<0.97)s.fit='contain';   // 단색 배경이 아니면 이어붙일 수 없어 전체 보이기
   }
   S[i]=s;
