@@ -112,7 +112,114 @@ button:disabled{opacity:.45;cursor:default}
 #view canvas#vlens{display:none;position:absolute;width:180px;height:180px;border-radius:50%;border:3px solid #2457c5;box-shadow:0 4px 14px rgba(0,0,0,.35);pointer-events:none;background:#fff}
 #view .vinfo{padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}
 @media(max-width:900px){.tiles{grid-template-columns:repeat(2,1fr)}.hin,main{padding-left:16px;padding-right:16px}}
+
+.tabs{background:#fff;border-bottom:1px solid var(--line)}
+.tin{max-width:1360px;margin:0 auto;padding:0 28px;display:flex;gap:6px}
+.tab{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:14px 20px;font-size:16px;font-weight:700;color:var(--sub)}
+.tab:hover{background:none;color:var(--tx)}
+.tab.on{color:var(--pri);border-bottom-color:var(--pri)}
+.hnote{background:var(--edbg);color:#1d3f8a;border-radius:var(--r);padding:12px 16px;font-size:14px;margin-bottom:18px}
+.hgrid{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+.hform label.f{display:block;margin:14px 0 5px;font-size:13px;font-weight:600;color:var(--sub)}
+.hform label.f:first-of-type{margin-top:0}
+.hform input[type=text],.hform textarea,.hform select{width:100%;padding:9px 10px;border:1px solid #c9cfda;border-radius:8px;font:inherit;font-size:14px}
+.hform textarea{resize:vertical;min-height:62px}
+.hcol{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.hcol label{font-size:13px;color:var(--sub);font-weight:600;display:flex;align-items:center;gap:8px}
+.hcol input[type=color]{width:44px;height:30px;border:1px solid #c9cfda;border-radius:6px;padding:1px}
+.hform h3,.hprev h3{margin:0 0 10px;font-size:16px}
+.hform hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.hstage{background:#eef0f4;border-radius:8px;padding:14px;overflow:auto;max-height:620px}
+.hstage .hs{display:inline-block;line-height:0;outline:1px solid #b9bfcc;background:#fff;overflow:hidden}
+.hz{display:flex;gap:4px}.hz button.on{background:var(--tx);color:#fff;border-color:var(--tx)}
+.hinfo{font-size:13px;color:var(--sub);margin:10px 0}
+.hbtn{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+#hCode{width:100%;height:150px;font:12px/1.5 Consolas,monospace;border:1px solid #c9cfda;border-radius:8px;padding:10px;resize:vertical}
+table.ht{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:14px}
+table.ht th,table.ht td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left}
+table.ht th{background:#f4f6fa;font-size:13px;color:var(--sub)}
+table.ht tr[data-i]{cursor:pointer}table.ht tr[data-i]:hover{background:#f8f9fc}
+table.ht tr.sel{background:var(--edbg)}
+.pill{font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--okbg);color:var(--ok)}.pill.check{background:var(--chkbg);color:var(--chk)}
+@media(max-width:900px){.hgrid{grid-template-columns:1fr}.tin{padding:0 16px}}
+.gd{background:#f8f9fc;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:13.5px;margin-top:10px}
+.gd b{display:block;margin-bottom:6px}.gd ul{margin:0;padding-left:18px}.gd li{margin:2px 0}
+.gd .nt{margin-top:8px;color:#8a4208}
+.gd .nt div{margin-top:2px}
+.sw{display:flex;gap:6px;margin-bottom:10px;align-items:center;font-size:13px;color:var(--sub);font-weight:600;flex-wrap:wrap}
+.sw button{width:30px;height:30px;padding:0;border-radius:6px;border:1px solid #98a2b3}
+.hform .row{margin-top:0}
+.cnt{font-size:12.5px;color:var(--sub);text-align:right;margin-top:3px}.cnt.bad{color:#c0392b;font-weight:700}
+/* ---- 카카오 비즈보드 스타일 제작 화면 ---- */
+.kh{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.kh h2{margin:0;font-size:22px;letter-spacing:-.4px}.kh span{color:var(--sub);font-size:13px}
+.kspecs{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;margin-bottom:18px}
+.kspecs .br{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.kspecs .br:first-child{border-top:0;padding-top:0}
+.kspecs .br:last-child{padding-bottom:0}
+.kspecs .gl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:700px){.kspecs .br{grid-template-columns:1fr}.kspecs .gl{grid-template-columns:repeat(2,1fr)}}
+.kspecs .bn{font-size:14px;font-weight:700;color:var(--tx);padding-top:8px}
+.spc{padding:9px 12px;border-radius:8px;border:1px solid #c9cfda;background:#fff;font-size:14px;font-weight:700;color:var(--tx);text-align:left;line-height:1.3}
+.spc small{display:block;font-weight:500;color:var(--sub);font-size:12.5px;margin-top:2px}
+.spc.on{border-color:var(--pri);color:var(--pri);background:var(--edbg);box-shadow:inset 0 0 0 1px var(--pri)}
+.spc.on small{color:var(--pri)}
+.kgrid{display:grid;grid-template-columns:minmax(380px,520px) 1fr;gap:18px;align-items:start}
+.kp{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.kph{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line);font-size:17px;font-weight:700;letter-spacing:-.3px}
+.kpb{padding:8px 24px 22px}
+.fr{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;padding:12px 0}
+.fl{font-size:14.5px;font-weight:700;padding-top:9px}.fl i{color:#e03131;font-style:normal;margin-left:2px}.fl small{font-weight:500;color:var(--mute);font-size:12.5px;margin-left:2px}
+.fv input[type=text],.fv textarea,.fv select{width:100%;padding:9px 44px 9px 12px;border:1px solid #c9cfda;border-radius:6px;font:inherit;font-size:14px}
+.fv select{padding-right:12px}
+.fv textarea{resize:none;height:64px;line-height:1.4}
+.inp{position:relative}.inp .c{position:absolute;right:12px;top:10px;font-size:13px;color:var(--sub)}.inp .c.bad{color:#c0392b;font-weight:700}
+.ibox{border:1px solid #c9cfda;border-radius:6px;padding:10px}
+.ipick{display:inline-block;padding:8px 14px;border:1px solid #c9cfda;border-radius:6px;font-size:13.5px;font-weight:600;cursor:pointer;background:#fff}
+.ipick:hover{background:#f4f6fa}
+.iset{display:flex;align-items:center;gap:12px}
+.iset img{width:56px;height:56px;object-fit:contain;border:1px solid var(--line);border-radius:6px;background:#fff}
+.iset b{display:block;font-size:14px;word-break:break-all}.iset small{color:var(--sub);font-size:12.5px}
+.iset .x{margin-left:auto;border:0;background:none;font-size:20px;color:var(--mute);padding:4px 8px}
+.colrow{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.colrow label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--sub);font-weight:600}
+.colrow input[type=color]{width:36px;height:28px;border:1px solid #c9cfda;border-radius:6px;padding:1px}
+.hs{border-radius:12px}
+.kopt{display:flex;gap:18px;align-items:center;margin:14px 0 4px;font-size:14px;flex-wrap:wrap}
+.kopt label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.klegend{font-size:12.5px;color:var(--sub);margin-bottom:10px}
+details.kd{background:#f4f6fa;border-radius:8px;margin-top:14px;padding:0}
+details.kd summary{cursor:pointer;padding:14px 18px;font-size:14px;font-weight:600;list-style:none}
+details.kd summary::after{content:'⌄';float:right;color:var(--sub)}
+details.kd[open] summary::after{content:'⌃'}
+details.kd .in{padding:0 18px 16px}
+@media(max-width:900px){.kgrid{grid-template-columns:1fr}.fr{grid-template-columns:1fr;gap:4px}.fl{padding-top:0}}
+.spr{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.spr button{width:60px;height:56px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--pri);border-radius:10px}
+.spr button span{font-size:11px;font-weight:600;color:var(--sub);line-height:1}
+.spr button:hover{background:var(--edbg);border-color:var(--pri)}
+.sphint{font-size:12.5px;color:var(--sub);margin-left:4px}
+.bgsw{width:56px!important;height:56px!important;border:2px solid #98a2b3!important;border-radius:10px!important;padding:0!important}
+#hPal{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(16,24,40,.14);width:264px;margin-bottom:10px}
+#hPal canvas{display:block;border-radius:8px;cursor:crosshair;touch-action:none}
+#palH{margin-top:10px}
+.palrow{display:flex;align-items:center;gap:8px;margin-top:10px}
+#palSw{width:28px;height:28px;border:1px solid #98a2b3;border-radius:6px;flex:none}
+#palHex{width:84px!important;padding:6px 8px!important;font:13px Consolas,monospace!important}
+.spr{flex-wrap:nowrap;gap:6px;margin-bottom:0}
+.spr button{width:36px;height:36px;padding:0;border-radius:8px;flex:none}
+.spr svg{width:20px;height:20px}
+.spr .bgsw{width:36px!important;height:36px!important;border-radius:8px!important}
+.spr .gsw{width:24px;height:24px;border-radius:6px;border:1px solid #98a2b3}
+.sepv{width:1px;height:24px;background:var(--line);margin:0 4px;flex:none}
+#hPal{margin-top:10px;margin-bottom:0}
+.spr{gap:4px}
+.spr .gsw{width:20px;height:20px;border-radius:5px}
+.sepv{margin:0 2px}
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Gothic+A1:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;700&family=Jua&family=Do+Hyeon&family=Black+Han+Sans&family=Nanum+Myeongjo:wght@400;700&family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@400;700&family=Hahmlet:wght@400;700&family=Song+Myung&display=swap">
 </head>
 <body>
 <header><div class="hin">
@@ -120,10 +227,11 @@ button:disabled{opacity:.45;cursor:default}
   <div class="steps" id="steps">
     <span id="s1" class="on">1. 큰 배너 올리기</span><span id="s2">2. 자동 변환 결과 확인</span><span id="s3">3. 이상하면 수정</span><span id="s4">4. 내려받기</span>
   </div>
-  <a href="detail.html" style="color:#2457c5;font-size:14px;font-weight:600;text-decoration:none">서평단 제작 요청서 →</a>
+  <a href="detail.html" style="background:#2457c5;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:8px 16px;border-radius:999px">상세페이지 시안 만들기 →</a>
   <div class="priv">이미지는 이 PC 안에서만 처리됩니다</div>
 </div></header>
-<main>
+<nav class="tabs"><div class="tin"><button class="tab on" data-tab="img">이미지 리사이징</button><button class="tab" data-tab="html">HTML 배너 만들기</button></div></nav>
+<main id="tabImg">
   <label class="drop" id="drop">
     <input type="file" id="file" accept="image/*" hidden>
     <b>큰 배너 이미지를 끌어다 놓거나 클릭해서 선택하세요</b>
@@ -159,6 +267,74 @@ button:disabled{opacity:.45;cursor:default}
   </div>
 </main>
 
+<main id="tabHtml" style="display:none">
+  <div class="kh"><h2>배너 이미지 만들기</h2><span>2026 맘스다이어리 광고제작가이드(Version 0.3.4) 기준 · 글자는 확대해도 깨지지 않게 새로 그립니다</span></div>
+  <div class="kspecs" id="hSpecs"></div>
+  <div class="kgrid">
+    <section class="kp"><div class="kph">구성 요소</div><div class="kpb">
+      <div class="fr"><div class="fl">이미지</div><div class="fv">
+        <div class="ibox"><label class="ipick" id="hImgPick" for="hImg">이미지 선택</label><input type="file" id="hImg" accept="image/*" hidden>
+          <div class="iset" id="hImgSet" style="display:none"><img id="hImgTh" alt=""><div><b id="hImgNm"></b><small id="hImgMeta"></small></div><button class="x" id="hImgClr" title="빼기">×</button></div></div>
+        <div class="hinfo" style="margin:6px 0 0">배경 없는 PNG 권장 · 올리지 않으면 글자만 들어갑니다</div></div></div>
+      <div class="fr" id="hIsRow"><div class="fl">이미지 크기</div><div class="fv"><input type="range" id="hIS" min="50" max="100" value="100" style="width:100%"><div class="hinfo" id="hISv" style="margin:2px 0 0">100%</div></div></div>
+      <div class="fr" id="hLogoRow"><div class="fl">로고<small>(선택)</small></div><div class="fv">
+        <div class="ibox"><label class="ipick" id="hLogoPick" for="hLogo">로고 선택</label><input type="file" id="hLogo" accept="image/*" hidden>
+          <div class="iset" id="hLogoSet" style="display:none"><img id="hLogoTh" alt=""><div><b id="hLogoNm"></b><small id="hLogoMeta"></small></div><button class="x" id="hLogoClr" title="빼기">×</button></div></div></div></div>
+      <div class="fr"><div class="fl">메인 카피<i>*</i></div><div class="fv"><div class="inp"><textarea id="hT">태교/육아일기 무료출판</textarea><span class="c" id="hTc"></span></div><div class="hinfo" style="margin:4px 0 0">Enter로 줄바꿈</div></div></div>
+      <div class="fr"><div class="fl">서브 카피</div><div class="fv"><div class="inp"><input type="text" id="hE" value="200만 엄마들의 선택!"><span class="c" id="hEc2"></span></div><div class="hinfo" style="margin:4px 0 0">강조할 단어는 *별표*로 감싸세요 (예: *에디슨* 신학기 모음전)</div></div></div>
+      <div class="fr" id="hPosRow"><div class="fl">서브 위치</div><div class="fv"><select id="hPos"><option value="above">메인 카피 위</option><option value="below">메인 카피 아래</option></select></div></div>
+      <div class="fr"><div class="fl">글꼴</div><div class="fv"><select id="hFont"><optgroup label="고딕"><option value="pret">Pretendard (기본)</option><option value="noto">Noto Sans KR</option><option value="nanum">나눔고딕</option><option value="gothica1">Gothic A1</option><option value="plex">IBM Plex Sans KR</option><option value="malgun">맑은 고딕</option></optgroup><optgroup label="둥근·개성"><option value="gowun">고운돋움</option><option value="jua">주아체 (둥글고 귀여움)</option><option value="dohyeon">도현체 (굵고 또렷함)</option><option value="blackhan">블랙한산스 (아주 굵음)</option></optgroup><optgroup label="명조(바탕)"><option value="myeongjo">나눔명조</option><option value="gowunb">고운바탕</option><option value="notoserif">Noto Serif KR</option><option value="hahmlet">함렛</option><option value="songmyung">송명</option></optgroup></select></div></div>
+      <div class="fr" id="hAlignRow"><div class="fl">글자 정렬</div><div class="fv"><select id="hAlign"><option value="auto">자동</option><option value="left">왼쪽</option><option value="center">가운데</option></select></div></div>
+      <div class="fr" id="hSideRow"><div class="fl">이미지 위치</div><div class="fv"><select id="hSide"><option value="right">오른쪽 (글자 왼쪽)</option><option value="left">왼쪽 (글자 오른쪽)</option></select></div></div>
+      <div class="fr" id="hBRow"><div class="fl">버튼<small>(선택)</small></div><div class="fv"><input type="text" id="hB" value="" placeholder="비우면 버튼 없음"></div></div>
+      <div class="fr" id="hBSelRow"><div class="fl">버튼 문구</div><div class="fv"><select id="hBsel"><option>자세히 보기</option><option>이벤트 참여하기</option></select><div class="hinfo" style="margin:4px 0 0">가이드에서 정한 2가지 중 선택</div></div></div>
+      <div class="fr" id="hNoBtn"><div class="fl">버튼</div><div class="fv" style="padding-top:9px;color:var(--sub);font-size:13.5px">이 규격에는 버튼을 넣지 않습니다.</div></div>
+      <div class="fr"><div class="fl">배경색</div><div class="fv">
+        <input type="color" id="hBg" value="#ebebeb" hidden>
+        <div class="spr"><button id="hBgSw" class="bgsw" title="배경색 고르기 (색 그래프)"></button><button id="hDrop" title="스포이드: 화면에서 색 집기 (Chrome·Edge)"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M20.71 5.63l-2.34-2.34a1 1 0 0 0-1.41 0l-3.12 3.12-1.23-1.21-1.41 1.41 1.42 1.42L3 17.25V21h3.75l9.92-9.92 1.42 1.42 1.41-1.41-1.21-1.23 3.12-3.12a1 1 0 0 0 0-1.41zM5.92 19H5v-.92l9.06-9.06.92.92L5.92 19z"/></svg></button><button id="hFromImg" title="올린 이미지에서 색 집기"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3 3.5-4.5 4.5 6H5l3.5-4.5z"/></svg></button><button id="hAutoBg" title="이미지 가장자리 색으로 자동 맞춤"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/></svg></button></div>
+        <div id="hPal" style="display:none"><canvas id="palSV" width="240" height="150"></canvas><canvas id="palH" width="240" height="16"></canvas>
+          <div class="palrow"><span id="palSw"></span><input type="text" id="palHex" maxlength="7" spellcheck="false"><span class="hinfo" style="margin:0">네모 안을 눌러 색을 고르세요</span></div></div>
+      </div></div>
+      <div class="fr"><div class="fl">글자색</div><div class="fv"><div class="colrow">
+          <label><input type="color" id="hTc" value="#000000">메인</label>
+          <label><input type="color" id="hEc" value="#555555">서브</label>
+          <label><input type="color" id="hHc" value="#d98a1d">강조</label>
+          <label><input type="color" id="hBb" value="#2457c5">버튼</label>
+          <label><input type="color" id="hBt" value="#ffffff">버튼 글자</label>
+        </div></div></div>
+      <div class="fr" id="hPush"><div class="fl">푸시 문구</div><div class="fv">
+        <div class="inp"><input type="text" id="hPT" placeholder="제목 (20자 이내)"><span class="c" id="hPTc"></span></div>
+        <div class="inp" style="margin-top:8px"><input type="text" id="hPC" value="(광고) " placeholder="내용 ((광고) 포함 50자 이내)"><span class="c" id="hPCc"></span></div>
+        <div class="hinfo" style="margin:4px 0 0">이 규격은 이미지 밖에 푸시 문구가 함께 들어갑니다</div></div></div>
+      <div class="fr"><div class="fl">파일명</div><div class="fv"><input type="text" id="hSvc" value="company" style="padding-right:12px"><div class="hinfo" id="hFn" style="margin:4px 0 0"></div></div></div>
+    </div></section>
+    <section class="kp"><div class="kph"><span id="hTitle"></span><button class="pri" id="hPng">배너 다운로드</button></div><div class="kpb" style="padding-top:20px">
+      <div class="chead" style="margin-bottom:10px"><div class="hz" id="hZ"><button data-z="0">맞춤</button><button data-z="1">100%</button><button data-z="2">200%</button><button data-z="4">400%</button></div></div>
+      <div class="hstage"><div class="hs" id="hStage"></div></div>
+      <div class="kopt"><label><input type="checkbox" id="hGl" checked>가이드라인 보기</label></div>
+      <div class="klegend">붉은 선 = 좌우 여백 · 파란 선 = 내용 영역 (저장 파일에는 안 나옵니다)</div>
+      <div class="hinfo" id="hInfo"></div>
+      <div class="klegend" style="color:#1d3f8a">확대해서 쓸 때는 2배·3배 PNG를 받으세요.</div>
+      <div class="verdict ok" id="hWhy"></div>
+      <div class="hbtn"><button id="hPng2">2배 PNG</button><button id="hPng3">3배 PNG</button><button id="hCopy">HTML 코드 복사</button><button id="hFile">HTML 파일 저장</button>
+        <label class="chip" id="hInl"><input type="checkbox">코드에 이미지 포함</label></div>
+      <details class="kd" open><summary>빠른 광고 진행을 위해 꼭 지켜주세요!</summary><div class="in gd" id="hGuide" style="margin:0;border:0;background:none"></div></details>
+      <details class="kd"><summary>HTML 코드 보기</summary><div class="in"><textarea id="hCode" readonly></textarea>
+        <div class="hinfo">코드의 글꼴은 보는 기기에 설치된 글꼴로 표시되어 글자 폭이 조금 달라질 수 있습니다. 정확한 모양이 필요한 곳에는 PNG를 쓰세요. 버튼은 모양만 만들며 링크는 넣지 않았습니다. 광고주 페이지 URL은 가이드대로 소재와 따로 전달해 주세요.</div></div></details>
+    </div></section>
+  </div>
+  <div class="sec"><h3>규격별 점검 <small>행을 누르면 위 미리보기가 바뀝니다</small></h3>
+    <table class="ht" id="hTbl"></table>
+    <div class="bar"><select id="hZipB" style="padding:8px;border:1px solid #c9cfda;border-radius:8px;font:inherit;font-size:14px"><option value="mom">맘스다이어리 6종</option><option value="all">전체 12종</option><option value="momple">맘플</option><option value="moa">모아베베</option></select><label class="chip on" id="hZ2"><input type="checkbox" checked>2배 고해상도 파일도 포함</label><span class="sp"></span><button class="pri" id="hZip">ZIP 받기 (PNG + HTML 코드)</button></div>
+  </div>
+  <div id="hPick" style="display:none;position:fixed;inset:0;background:rgba(16,24,40,.6);z-index:30;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;border-radius:12px;padding:18px;max-width:640px;width:100%">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><b>배경으로 쓸 색 부분을 눌러 주세요</b><span class="sp"></span><span id="hPickSw" style="width:28px;height:28px;border:1px solid #98a2b3;border-radius:6px;display:inline-block"></span><code id="hPickHex" style="min-width:64px"></code><button id="hPickX">닫기</button></div>
+      <div style="background:repeating-conic-gradient(#e5e7eb 0 25%,#fff 0 50%) 0 0/16px 16px;border-radius:8px;text-align:center;line-height:0;overflow:auto;max-height:70vh"><canvas id="hPickCv" style="cursor:crosshair;max-width:100%"></canvas></div>
+      <div class="hinfo" id="hPickMsg" style="margin:8px 0 0">체크무늬로 보이는 부분은 투명해서 고를 수 없습니다.</div>
+    </div>
+  </div>
+</main>
 <div id="modal">
   <div class="box">
     <div class="pv">
@@ -752,9 +928,9 @@ async function loadFile(f){
 $('file').onchange=e=>loadFile(e.target.files[0]);
 $('replace').onclick=()=>{$('file').value='';$('file').click();};
 const drop=$('drop');
-['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(curTab==='img')drop.classList.add('over');}));
 ['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
-document.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))loadFile(f);});
+document.addEventListener('drop',e=>{if(curTab!=='img')return;const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))loadFile(f);});
 document.querySelectorAll('.chip[data-b]').forEach(ch=>{
   ch.querySelector('input').onchange=e=>{on[ch.dataset.b]=e.target.checked;ch.classList.toggle('on',e.target.checked);applyView();};
 });
@@ -913,6 +1089,428 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&V)$('vClose').click
   };
   cv.onmouseleave=()=>{lens.style.display='none';};
 })();
+
+// ---------- HTML 배너 만들기 탭 ----------
+// 맘스다이어리 6개 규격은 「2026 맘스다이어리 광고제작가이드」(Version 0.3.4, 2026.01.01) 내용을 기준으로 점검
+const FONTS={
+  pret:["Pretendard","'Pretendard','Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif"],
+  noto:["Noto Sans KR","'Noto Sans KR','Malgun Gothic','맑은 고딕',sans-serif"],
+  nanum:["Nanum Gothic","'Nanum Gothic','Malgun Gothic','맑은 고딕',sans-serif"],
+  gothica1:["Gothic A1","'Gothic A1','Malgun Gothic','맑은 고딕',sans-serif"],
+  plex:["IBM Plex Sans KR","'IBM Plex Sans KR','Malgun Gothic','맑은 고딕',sans-serif"],
+  malgun:["Malgun Gothic","'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif"],
+  gowun:["Gowun Dodum","'Gowun Dodum','Malgun Gothic','맑은 고딕',sans-serif",1],
+  jua:["Jua","'Jua','Malgun Gothic','맑은 고딕',sans-serif",1],
+  dohyeon:["Do Hyeon","'Do Hyeon','Malgun Gothic','맑은 고딕',sans-serif",1],
+  blackhan:["Black Han Sans","'Black Han Sans','Malgun Gothic','맑은 고딕',sans-serif",1],
+  myeongjo:["Nanum Myeongjo","'Nanum Myeongjo','Batang','바탕',serif"],
+  gowunb:["Gowun Batang","'Gowun Batang','Batang','바탕',serif"],
+  notoserif:["Noto Serif KR","'Noto Serif KR','Batang','바탕',serif"],
+  hahmlet:["Hahmlet","'Hahmlet','Batang','바탕',serif"],
+  songmyung:["Song Myung","'Song Myung','Batang','바탕',serif",1]
+};                                               // 세 번째 값 1 = 굵기가 한 가지뿐인 글꼴(굵게 만들지 않고 그대로 씀)
+let SINGLE=false;const wOf=w=>SINGLE?400:w;
+let FONT=FONTS.pret[1];
+async function loadFont(){                           // 고른 글꼴을 지금 입력한 글자 기준으로 미리 불러옴 (불러오기 전에 그리면 다른 글꼴로 보임)
+  const f=FONTS[$('hFont').value],txt=$('hT').value+$('hE').value+$('hB').value+'가나다라마바사 0123456789 ()&!?.,';
+  FONT=f[1];SINGLE=!!f[2];
+  try{await Promise.all((SINGLE?['400']:['400','700']).map(w=>document.fonts.load(`${w} 20px "${f[0]}"`,txt)));}catch(_){}
+}
+const HS={img:null,url:null,opaque:false,logo:null,logoUrl:null,z:0,sel:0,tok:0};
+const MC=document.createElement('canvas').getContext('2d');
+const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const GRAYS=['#fbfbfb','#ebebeb','#e8e8e8','#ffffff'];
+const R_COMMON=['좌우 여백은 이미지 배경과 같은 단색, 원색·형광색 금지','회색 계열 배경은 #fbfbfb, #ebebeb, #e8e8e8, #ffffff 4가지만 사용','모바일에서 좌우가 잘려 보이지 않는 이미지, 배경 없는 오브젝트 이미지 사용','과도한 효과 금지, 컬러는 기본(#ffffff, #000000) 포함 3가지 사용 가능'];
+const N_COMMON=['배너에 "맘스다이어리" 관련 문구 기재 불가','광고주 페이지 URL은 광고 소재와 따로 전달'];
+// 규격 번호(SPECS 순서)별 가이드
+const G={
+ 0:{tmin:24,tmax:48,smin:24,smax:48,maxLines:3,lineNote:'로고 포함 3줄 이하',logo:true,noBtn:true,rules:['좌우 여백 20px는 이미지 배경과 같은 단색, 원색·형광색 금지',R_COMMON[1],R_COMMON[2],'텍스트 크기 24~48px, 로고 포함 3줄 이하',R_COMMON[3]],notes:N_COMMON},
+ 1:{tmin:24,tmax:48,smin:24,smax:48,maxLines:2,lineNote:'2줄 이하',logo:true,noBtn:true,rules:['좌우 여백 20px는 이미지 배경과 같은 단색, 원색·형광색 금지',R_COMMON[1],R_COMMON[2],'텍스트 크기 24~48px, 2줄 이하',R_COMMON[3]],notes:N_COMMON},
+ 2:{tmin:24,tmax:48,smin:24,smax:48,maxLines:2,lineNote:'2줄 이하',logo:true,noBtn:true,rules:['좌우 여백 20px는 이미지 배경과 같은 단색, 원색·형광색 금지',R_COMMON[1],R_COMMON[2],'텍스트 크기 24~48px, 2줄 이하',R_COMMON[3]],notes:N_COMMON},
+ 3:{tmin:24,tmax:48,smin:24,smax:48,maxLines:3,lineNote:'로고 포함 3줄 이하',logo:true,noBtn:true,rules:['좌우 여백 20px는 이미지 배경과 같은 단색, 원색·형광색 금지',R_COMMON[1],R_COMMON[2],'텍스트 크기 24~48px, 로고 포함 3줄 이하',R_COMMON[3]],notes:N_COMMON},
+ 4:{tmin:52,tmax:64,smin:28,smax:32,maxT:2,maxS:2,lineNote:'메인·서브 각각 2줄 이하',logo:true,btn:['자세히 보기','이벤트 참여하기'],pos:true,rules:['원색·형광색 금지',R_COMMON[1],'배경 없는 오브젝트 이미지 권장','버튼 문구는 "자세히 보기" 또는 "이벤트 참여하기"','메인 텍스트 52~64px 2줄 이하, 서브 텍스트 28~32px 2줄 이하(메인 위·아래 가능)','과도한 효과 금지, 컬러는 기본(#ffffff, #000000) 포함 3가지 사용 가능'],notes:['배너에 "맘스다이어리" 관련 문구 기재는 협의 필요','광고주 페이지 URL은 광고 소재와 따로 전달','1주 1일 1개 업체만 진행 가능','단독 외부링크 진행 불가 (인앱 이벤트 이동 후 아웃랜딩 가능, 이벤트 구성 필수)']},
+ 5:{push:true,logo:true,rules:['좌우 여백 50px는 이미지 배경과 같은 단색, 원색·형광색 금지','배경색·용량·좌우 여백만 주의해서 제작','푸시 문구: 제목 20자 이내, 내용은 (광고) 문구 포함 50자 이내'],notes:['배너에 "맘스다이어리" 관련 문구 기재 불가','광고주 페이지 URL은 광고 소재와 따로 전달','단독 외부링크 진행 불가 (인앱 이벤트 이동 후 아웃랜딩 가능, 이벤트 구성 필수)']}
+};
+function hOpts(i=HS.sel){
+  const g=G[i];
+  const b=g&&g.noBtn?'':(g&&g.btn?$('hBsel').value:$('hB').value.trim());
+  return {e:$('hE').value.trim(),t:$('hT').value.trim(),b,pos:(g&&g.pos)?$('hPos').value:'above',side:$('hSide').value,isc:$('hIS').value/100,align:$('hAlign').value,hc:$('hHc').value,bg:$('hBg').value,tc:$('hTc').value,ec:$('hEc').value,bb:$('hBb').value,bt:$('hBt').value};
+}
+const LSP=-0.02;                                   // 글자 간격: 글자 크기의 -2%
+const hasLS='letterSpacing' in MC;
+const lsOf=(fs,wt)=>Math.round(fs*(wt>=600?-0.03:-0.05)*100)/100;   // 작은 글씨(400)는 -5%, 굵은 글씨는 -3%
+function mw(t,fs,wt){MC.font=`${wOf(wt)} ${fs}px ${FONT}`;if(hasLS)MC.letterSpacing=lsOf(fs,wt)+'px';return MC.measureText(t).width;}
+function wrapT(text,fs,wt,maxW){
+  const out=[];
+  for(const para of text.split('\n')){
+    let line='';
+    for(const w of para.split(' ')){
+      const tl=line?line+' '+w:w;
+      if(mw(tl,fs,wt)<=maxW){line=tl;continue;}
+      if(line){out.push(line);line='';}
+      if(mw(w,fs,wt)<=maxW){line=w;continue;}
+      let seg='';
+      for(const ch of w){if(mw(seg+ch,fs,wt)<=maxW)seg+=ch;else{out.push(seg);seg=ch;}}
+      line=seg;
+    }
+    out.push(line);
+  }
+  return out.map(l=>l.trim()).filter(l=>l!=='');
+}
+// *단어* 로 감싼 부분은 강조색으로 표시 (줄바꿈 후에도 위치를 유지)
+function richLines(text,fs,wt,maxW){
+  const plain=[],hl=[];let on=false,prevSp=false;
+  for(const ch of text){
+    if(ch==='*'){on=!on;continue;}
+    if(ch==='\n'){plain.push('\n');hl.push(false);prevSp=false;continue;}
+    if(ch===' '||ch==='\t'){if(prevSp)continue;prevSp=true;plain.push(' ');hl.push(on);continue;}
+    prevSp=false;plain.push(ch);hl.push(on);
+  }
+  const ps=plain.join(''),out=[];let cur=0;
+  for(const ln of wrapT(ps,fs,wt,maxW)){
+    let st=ps.indexOf(ln,cur);if(st<0)st=cur;
+    const segs=[];
+    for(let k=0;k<ln.length;k++){const f=!!hl[st+k];if(segs.length&&segs[segs.length-1].hl===f)segs[segs.length-1].t+=ln[k];else segs.push({t:ln[k],hl:f});}
+    out.push({text:ln,segs});cur=st+ln.length;
+  }
+  return out;
+}
+function layoutH(spec,o,i){
+  const g=G[i]||null,W=spec.w,Hh=spec.h,mx=spec.mx||0,tall=W/Hh<1.3;
+  const p=Math.max(8,Math.round(Math.min(W,Hh)*0.08));
+  const cx0=Math.max(mx+12,Math.round(W*(spec.px||0.05))),cw=W-2*cx0,ch=Hh-2*p;
+  const img=HS.img,asp=img?img.width/img.height:1,hasE=!!o.e,hasB=!!o.b;
+  const logo=(g&&g.logo===false)?null:HS.logo,aspL=logo?logo.width/logo.height:1;
+  if(!o.t&&!hasE&&!hasB&&!img&&!logo)return {items:[],warn:['문구나 이미지를 넣어 주세요.'],fs:0,ok:false};
+  const maxFs=Math.round(tall?Math.min(W*0.1,Hh*0.1):Math.min(Hh*0.3,64));
+  const tmin=g&&g.tmin?g.tmin:10,top=g&&g.tmax?Math.min(g.tmax,Math.max(maxFs,g.tmin)):maxFs;
+  function fit(fs){
+    const gs=g&&g.smin;
+    let efs=gs?(g.pos?Math.min(g.smax,Math.max(g.smin,Math.round(fs*0.6))):g.smin):Math.max(9,Math.round(fs*0.5));
+    const bfs=g&&g.btn?26:Math.max(9,Math.round(fs*0.55));
+    const lh=Math.round(fs*1.3),bh=Math.round(bfs*2.2);
+    const gap1=Math.round(fs*0.35),gap2=Math.round(fs*0.6);
+    let ix=0,iy=0,iw=0,ih=0,textW=cw,tx=cx0,lx=0,lgH=0,logoW=0;
+    const aOpt=o.align||'auto',short=Hh<=120&&!tall,inl=!!(logo&&short&&hasE);   // 짧은 규격+서브 문구가 있으면 로고를 서브 첫 줄 앞에 붙임(디자이너 시안 방식)
+    const al=inl?'left':(aOpt==='auto'?((tall||!img)?'center':'left'):aOpt);
+    if(logo&&short&&!inl){lgH=Math.min(Hh*0.4,34);logoW=lgH*aspL;if(logoW>cw*0.22){logoW=cw*0.22;lgH=logoW/aspL;}}
+    let left=cx0,right=cx0+cw;
+    if(img&&!tall){
+      ih=(Hh-2*Math.max(6,Math.round(p*0.5)))*(o.isc||1);iw=ih*asp;if(iw>cw*0.4*(o.isc||1)){iw=cw*0.4*(o.isc||1);ih=iw/asp;}
+      iy=(Hh-ih)/2;
+      const gI=short?8:p*1.5;                                   // 이미지는 단색 여백(가이드 20px) 바로 안쪽까지 붙일 수 있음
+      if(o.side==='left'){ix=mx>0?mx+2:left;left=ix+iw+gI;}else{ix=mx>0?W-mx-2-iw:right-iw;right=ix-gI;}
+    }
+    if(logoW){lx=left;left+=logoW+(short?10:Math.round(p*1.8));}
+    tx=left;textW=right-left;
+    const seq=[];
+    if(logo&&!short){let lg=g?30:Math.max(14,Math.round(fs*0.6)),lw=lg*aspL;if(lw>textW*0.5){lw=textW*0.5;lg=lw/aspL;}seq.push({k:'l',tag:'l',h:lg,w:lw});}
+    const lgI=inl?Math.round(efs*0.85):0,lwI=inl?lgI*aspL+8:0;
+    let subL=hasE?richLines(o.e,efs,400,textW-lwI):[];
+    if(hasE&&gs&&!g.pos)for(let e=efs-1;e>=g.smin&&subL.length>1;e--){efs=e;subL=richLines(o.e,e,400,textW-lwI);}   // 서브 문구가 한 줄에 들어가도록 가이드 최소 크기까지 줄임
+    const elh=Math.round(efs*1.45),tl=o.t?richLines(o.t,fs,700,textW):[];
+    const subItems=t=>({k:'t',tag:o.pos==='below'?'s':'e',inl:inl,text:t.text,segs:t.segs,hc:o.hc,fs:efs,wt:400,c:o.ec,h:elh});
+    if(o.pos!=='below')subL.forEach(t=>seq.push(subItems(t)));
+    tl.forEach(t=>seq.push({k:'t',tag:'t',text:t.text,segs:t.segs,hc:o.hc,fs,wt:700,c:o.tc,h:lh}));
+    if(o.pos==='below')subL.forEach(t=>seq.push(subItems(t)));
+    if(hasB){const bw=Math.round(mw(o.b,bfs,700)+2*Math.round(bfs*1.1));seq.push({k:'b',tag:'b',text:o.b,fs:bfs,wt:700,c:o.bt,bg:o.bb,h:bh,w:bw,r:Math.round(bh/2)});}
+    const gapOf=(a,b)=>a.tag==='l'?gap2:(a.tag==='e'&&b.tag==='t')||(a.tag==='t'&&b.tag==='s')?gap1:(a.tag===b.tag?0:gap2);
+    const sum=()=>seq.reduce((a,b,j)=>a+b.h+(j?gapOf(seq[j-1],b):0),0);
+    let spaceOk=true;
+    if(tall&&img){
+      ih=Math.min(ch-sum()-gap2,cw/asp)*(o.isc||1);iw=ih*asp;
+      if(ih<ch*0.28)spaceOk=false;
+      const bi=seq.findIndex(b=>b.k==='b');
+      seq.splice(bi<0?seq.length:bi,0,{k:'i',tag:'i',h:Math.max(0,ih),w:iw});
+    }
+    if(sum()>ch+0.5)spaceOk=false;
+    const bt=seq.find(q=>q.k==='b');if(bt&&bt.w>textW)spaceOk=false;
+    let lineOk=true;
+    if(g&&g.maxT)lineOk=tl.length<=g.maxT&&subL.length<=g.maxS;
+    else if(g&&g.maxLines)lineOk=(logo&&!short?1:0)+tl.length+subL.length<=g.maxLines;
+    let y=(Hh-sum())/2;const items=[];
+    seq.forEach((b,j)=>{
+      if(j)y+=gapOf(seq[j-1],b);
+      if(b.k==='i')items.push({k:'i',s:'img',x:cx0+(cw-iw)/2,y,w:iw,h:ih});
+      else if(b.k==='l')items.push({k:'i',s:'logo',x:al==='left'?tx:tx+(textW-b.w)/2,y,w:b.w,h:b.h});
+      else if(b.k==='b')items.push({...b,x:al==='left'?tx:tx+(textW-b.w)/2,y,al:'center'});
+      else if(b.inl)items.push({...b,x:tx+lwI,y,w:textW-lwI,al:'left'});
+      else items.push({...b,x:tx,y,w:textW,al});
+      if(inl&&b.inl&&!b.drawnLogo&&seq.findIndex(q=>q.inl)===j)items.push({k:'i',s:'logo',x:tx,y:y+(b.h-lgI)/2,w:lgI*aspL,h:lgI});
+      y+=b.h;
+    });
+    if(img&&!tall)items.push({k:'i',s:'img',x:ix,y:iy,w:iw,h:ih});
+    if(logoW)items.push({k:'i',s:'logo',x:lx,y:(Hh-lgH)/2,w:logoW,h:lgH});
+    return {spaceOk,lineOk,items,fs,iw:(img?iw:0)};
+  }
+  let best=null;
+  for(let fs=top;fs>=tmin&&!best;fs--){const r=fit(fs);if(r.spaceOk&&r.lineOk)best=r;}
+  for(let fs=tmin-1;fs>=10&&!best;fs--){const r=fit(fs);if(r.spaceOk&&r.lineOk)best=r;}
+  if(!best)best=fit(Math.max(10,Math.min(tmin,top)));
+  const warn=[];
+  if(!best.spaceOk)warn.push('내용이 규격 안에 다 들어가지 않습니다. 문구를 줄이거나 이미지를 빼 보세요.');
+  if(!best.lineOk)warn.push(`줄 수가 가이드(${g.lineNote})를 넘습니다. 문구를 줄여 주세요.`);
+  if(o.t&&g&&g.tmin&&best.fs<g.tmin)warn.push(`메인 글자가 ${best.fs}px로 가이드(${g.tmin}~${g.tmax}px)보다 작아졌어요. 문구를 줄여 주세요.`);
+  else if(o.t&&!(g&&g.tmin)&&best.fs<16)warn.push(`제목 글자가 ${best.fs}px로 작아 읽기 어려울 수 있어요.`);
+  if(img&&best.iw*2>img.width)warn.push(`올린 이미지(${img.width}px)가 작아, 2배 파일에서는 이미지가 흐려질 수 있어요.`);
+  return {items:best.items,warn,fs:best.fs,ok:best.spaceOk&&best.lineOk,box:{x:cx0,y:p,w:cw,h:ch,mx}};
+}
+// 맘스다이어리 가이드 점검 (색·문구·이미지)
+function isNeon(hex){
+  const r=parseInt(hex.slice(1,3),16)/255,gg=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+  const mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);return mx>=0.8&&mx>0&&(mx-mn)/mx>=0.7;
+}
+function guideWarn(i,o){
+  const g=G[i],w=[];if(!g)return w;
+  const pushTxt=g.push?[$('hPT').value,$('hPC').value]:[];
+  if([o.e,o.t,o.b,...pushTxt].join(' ').includes('맘스다이어리'))w.push('"맘스다이어리" 관련 문구는 기재할 수 없습니다(가이드).');
+  if(!GRAYS.includes(o.bg.toLowerCase())){
+    if(isNeon(o.bg))w.push('배경색이 원색·형광색 계열일 수 있어요. 회색 4가지(#fbfbfb, #ebebeb, #e8e8e8, #ffffff) 중 고르는 것을 권장합니다.');
+    else if((()=>{const r=parseInt(o.bg.slice(1,3),16),g2=parseInt(o.bg.slice(3,5),16),b2=parseInt(o.bg.slice(5,7),16);return Math.max(r,g2,b2)-Math.min(r,g2,b2)<8;})())w.push('회색 계열 배경은 #fbfbfb, #ebebeb, #e8e8e8, #ffffff 4가지만 쓸 수 있습니다.');
+  }
+  const cols=new Set([o.tc,o.e?o.ec:'',/\*[^*]+\*/.test(o.t+' '+o.e)?o.hc:'',o.b?o.bb:'',o.b?o.bt:''].filter(Boolean).map(c=>c.toLowerCase()));
+  if(cols.size>3)w.push(`글자·버튼 색이 ${cols.size}가지입니다. 가이드는 기본(#ffffff, #000000) 포함 3가지까지 쓸 수 있습니다.`);
+  if(HS.img&&HS.opaque){
+    w.push('오브젝트 이미지에 배경이 있는 것 같아요. 배경 없는 PNG 이미지를 권장합니다.');
+    const e=HS.edge;if(e){const dd=[1,3,5].reduce((a,k)=>a+Math.abs(parseInt(e.substr(k,2),16)-parseInt(o.bg.substr(k,2),16)),0);if(dd>36)w.push(`이미지 배경색(${e})과 배너 배경색이 달라 이미지 테두리가 보일 수 있어요. [이미지 배경색 자동]이나 스포이드로 맞춰 주세요.`);}
+    else w.push('이미지 배경이 한 가지 색이 아니라 배너 배경과 이어 붙일 수 없을 수 있어요. 배경 없는 PNG를 권장합니다.');
+  }
+  if(g.push){
+    const t=$('hPT').value.length,c=$('hPC').value;
+    if(t>20)w.push(`푸시 제목이 ${t}자입니다(20자 이내).`);
+    if(c.length>50)w.push(`푸시 내용이 ${c.length}자입니다(50자 이내).`);
+    if(!c.includes('(광고)'))w.push('푸시 내용에 (광고) 문구가 들어가야 합니다.');
+  }
+  return w;
+}
+function htmlOf(spec,o,L,inline){
+  const n=v=>Math.round(v*100)/100+'px';
+  let s=`<div style="position:relative;width:${spec.w}px;height:${spec.h}px;overflow:hidden;background:${o.bg};font-family:${FONT}">`;
+  for(const it of L.items){
+    if(it.k==='i'){
+      const lg=it.s==='logo',im=lg?HS.logo:HS.img;if(!im)continue;
+      const src=inline?(lg?HS.logoUrl:HS.url):(lg?'로고파일명.png':'이미지파일명.png');
+      s+=`\n  <img src="${src}" alt="" style="position:absolute;left:${n(it.x)};top:${n(it.y)};width:${n(it.w)};height:${n(it.h)}">`;continue;
+    }
+    const base=`position:absolute;left:${n(it.x)};top:${n(it.y)};width:${n(it.w)};height:${n(it.h)};line-height:${n(it.h)};font-size:${it.fs}px;font-weight:${wOf(it.wt)};color:${it.c};text-align:${it.al};letter-spacing:${lsOf(it.fs,it.wt)}px;white-space:nowrap`;
+    const inner=it.segs&&it.segs.some(q=>q.hl)?it.segs.map(q=>q.hl?`<span style="color:${it.hc}">${esc(q.t)}</span>`:esc(q.t)).join(''):esc(it.text);
+    s+=`\n  <div style="${base}${it.k==='b'?`;background:${it.bg};border-radius:${it.r}px`:''}">${inner}</div>`;
+  }
+  return s+'\n</div>';
+}
+function rrect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function paintH(c,spec,o,L,k){
+  c.width=Math.round(spec.w*k);c.height=Math.round(spec.h*k);
+  const g=c.getContext('2d');g.setTransform(k,0,0,k,0,0);
+  g.fillStyle=o.bg;g.fillRect(0,0,spec.w,spec.h);
+  for(const it of L.items){
+    if(it.k==='i'){const im=it.s==='logo'?HS.logo:HS.img;if(im)drawHQ(g,im,0,0,im.width,im.height,it.x,it.y,it.w,it.h);continue;}
+    if(it.k==='b'){g.fillStyle=it.bg;rrect(g,it.x,it.y,it.w,it.h,it.r);g.fill();}
+    g.font=`${wOf(it.wt)} ${it.fs}px ${FONT}`;g.fillStyle=it.c;g.textAlign=it.al;g.textBaseline='alphabetic';if(hasLS)g.letterSpacing=lsOf(it.fs,it.wt)+'px';
+    const m=g.measureText(it.text),asc=m.fontBoundingBoxAscent!=null?m.fontBoundingBoxAscent:it.fs*0.9,dsc=m.fontBoundingBoxDescent!=null?m.fontBoundingBoxDescent:it.fs*0.25;
+    const by=it.y+(it.h-(asc+dsc))/2+asc;
+    if(it.segs&&it.segs.some(q=>q.hl)){
+      const ws=it.segs.map(q=>g.measureText(q.t).width),tot=ws.reduce((x,y)=>x+y,0);
+      let x0=it.al==='center'?it.x+(it.w-tot)/2:it.x;g.textAlign='left';
+      it.segs.forEach((q,j)=>{g.fillStyle=q.hl?it.hc:it.c;g.fillText(q.t,x0,by);x0+=ws[j];});
+    }else g.fillText(it.text,it.al==='center'?it.x+it.w/2:it.x,by);
+  }
+}
+const hName=(spec,k)=>`${$('hSvc').value.trim()||'company'}_${spec.w}x${spec.h}${k>1?'@'+k+'x':''}`;
+const fontP=Promise.all(['400','500','700'].map(w=>document.fonts.load(`${w} 20px Pretendard`))).catch(()=>{});
+fontP.then(()=>{if(curTab==='html')hRender();});
+async function hBlob(spec,o,L,k){
+  await fontP;await loadFont();
+  const c=document.createElement('canvas');paintH(c,spec,o,L,k);
+  if(k===1)return (await encode(spec,c));
+  return {blob:await blobOf(c,spec.f==='jpg'?'image/jpeg':'image/png',0.95),notes:[]};
+}
+// 규격에 따라 입력칸 보이기/숨기기, 가이드 안내
+const dsp=(id,v)=>{$(id).style.display=v?'':'none';};
+function setImgBox(pre,im,name,size){
+  const set=$(pre+'Set'),pick=$(pre+'Pick');
+  set.style.display=im?'flex':'none';pick.style.display=im?'none':'';
+  if(im){$(pre+'Th').src=pre==='hImg'?HS.url:HS.logoUrl;$(pre+'Nm').textContent=name;$(pre+'Meta').textContent=`${im.width}x${im.height} | ${size}`;}
+}
+function hUi(){
+  $('hBgSw').style.background=$('hBg').value;
+  const i=HS.sel,sp=SPECS[i],g=G[i],wide=sp.w/sp.h>=1.3;
+  $('hISv').textContent=$('hIS').value+'%';dsp('hPosRow',g&&g.pos);dsp('hSideRow',wide);
+  dsp('hBRow',!g||(!g.noBtn&&!g.btn));dsp('hBSelRow',g&&g.btn);dsp('hNoBtn',g&&g.noBtn);
+  dsp('hLogoRow',!(g&&g.logo===false));dsp('hPush',g&&g.push);
+  setImgBox('hImg',HS.img,HS.imgName,HS.imgMeta);setImgBox('hLogo',HS.logo,HS.logoName,HS.logoMeta);
+  $('hFn').textContent=`저장 파일명: ${hName(sp)}.${sp.f==='jpg'?'jpg':'png'}`;
+  let h=`<b>${BRANDS[sp.b]} · ${sp.name}</b><div>사이즈 ${sp.w}x${sp.h}px · ${sp.f.toUpperCase()}${sp.kb?` · 용량 ${sp.kb}KB 미만`:''}</div>`;
+  if(g){h+='<ul style="margin-top:6px">'+g.rules.map(r=>`<li>${r}</li>`).join('')+'</ul><div class="nt">'+g.notes.map(r=>`<div>※ ${r}</div>`).join('')+'</div>';}
+  else h+='<div style="margin-top:6px;color:var(--sub)">이 규격은 맘스다이어리 제작가이드에 없는 규격이라 크기·글자 잘림 위주로만 점검합니다.</div>';
+  $('hGuide').innerHTML=h;
+  document.querySelectorAll('.spc').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));
+}
+function cnt(){
+  const set=(id,n,max)=>{$(id).textContent=max?`${n}`:`${n}`;$(id).className='c'+(max&&n>max?' bad':'');};
+  set('hTc',$('hT').value.replace(/\n/g,'').length);set('hEc2',$('hE').value.length);
+  set('hPTc',$('hPT').value.length,20);set('hPCc',$('hPC').value.length,50);
+}
+function overlay(spec,L){
+  const b=L.box,W=spec.w,H=spec.h,mk=(css,txt)=>`<div style="position:absolute;pointer-events:none;${css}">${txt||''}</div>`;
+  let s='';
+  if(b.mx>0)s+=mk(`left:${b.mx}px;top:0;height:${H}px;border-left:1.5px dashed #e03131`)+mk(`left:${W-b.mx}px;top:0;height:${H}px;border-left:1.5px dashed #e03131`)
+    +mk(`left:0;top:0;width:${b.mx}px;height:${H}px;background:rgba(224,49,49,.07)`)+mk(`left:${W-b.mx}px;top:0;width:${b.mx}px;height:${H}px;background:rgba(224,49,49,.07)`);
+  s+=mk(`left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px;border:1.5px dashed #2457c5`);
+  return s;
+}
+function hRender(){
+  const i=HS.sel,o=hOpts(i),spec=SPECS[i],L=layoutH(spec,o,i),warn=[...L.warn,...guideWarn(i,o)];
+  hUi();cnt();
+  $('hTitle').textContent=`${BRANDS[spec.b]} · ${spec.name}`;
+  const gl=$('hGl').checked?overlay(spec,L):'';
+  $('hStage').innerHTML=`<div id="hIn" style="position:relative;width:${spec.w}px;height:${spec.h}px;transform-origin:0 0">${htmlOf(spec,o,L,true)}${gl}</div>`;
+  const box=$('hStage').parentNode,avail=Math.max(200,box.clientWidth-30);
+  const z=HS.z||Math.min(1,avail/spec.w);
+  $('hIn').style.transform=`scale(${z})`;$('hStage').style.width=spec.w*z+'px';$('hStage').style.height=spec.h*z+'px';
+  document.querySelectorAll('#hZ button').forEach(b=>b.classList.toggle('on',+b.dataset.z===HS.z));
+  $('hCode').value=htmlOf(spec,o,L,$('hInl').querySelector('input').checked);
+  $('hWhy').className='verdict '+(warn.length?'check':'ok');
+  $('hWhy').innerHTML=warn.length?warn.map(t=>`<div>• ${t}</div>`).join(''):'<div>✔ 내용이 모두 들어가고 가이드 점검 항목에 맞습니다.</div>';
+  const info=`${spec.w}x${spec.h} ${spec.f.toUpperCase()}`+(spec.kb?` · ${spec.kb}KB 미만`:'')+(HS.z?` · ${HS.z*100}%`:'')+(HS.note?` · ${HS.note}`:'');
+  $('hInfo').textContent=info;
+  let t='<tr><th>브랜드</th><th>규격</th><th>크기</th><th>점검</th><th>안내</th></tr>';
+  SPECS.forEach((sp,j)=>{
+    const oj=hOpts(j),w=[...layoutH(sp,oj,j).warn,...guideWarn(j,oj)];
+    t+=`<tr data-i="${j}" class="${j===i?'sel':''}"><td>${BRANDS[sp.b]}</td><td>${sp.name}</td><td>${sp.w}x${sp.h}</td><td><span class="pill ${w.length?'check':'ok'}">${w.length?'확인 필요':'정상'}</span></td><td>${w.join(' ')}</td></tr>`;
+  });
+  $('hTbl').innerHTML=t;
+  const tok=++HS.tok;                                   // 용량은 입력이 멈춘 뒤 계산
+  setTimeout(async()=>{
+    if(tok!==HS.tok)return;
+    const r=await hBlob(spec,o,L,1);
+    if(tok!==HS.tok)return;
+    const kb=r.blob.size/1024;
+    $('hInfo').textContent=info+` · 파일 ${kb.toFixed(0)}KB`+(spec.kb&&kb>spec.kb?' (초과)':'');
+  },350);
+}
+let hTimer=null;
+function hSoon(){clearTimeout(hTimer);hTimer=setTimeout(async()=>{await loadFont();hRender();},120);}
+(function(){
+  let h='';
+  for(const k in BRANDS){h+=`<div class="br"><span class="bn">${BRANDS[k]}</span><div class="gl">`+SPECS.map((s,i)=>s.b===k?`<button class="spc" data-i="${i}">${s.name}<small>${s.w} x ${s.h}px · ${s.f.toUpperCase()}</small></button>`:'').join('')+'</div></div>';}
+  $('hSpecs').innerHTML=h;
+})();
+$('hSpecs').onclick=e=>{const b=e.target.closest('.spc');if(b){HS.sel=+b.dataset.i;hRender();}};
+$('hGl').onchange=hRender;
+['hFont','hIS','hE','hT','hB','hBsel','hPos','hSide','hBg','hTc','hEc','hBb','hBt','hSvc','hPT','hPC'].forEach(id=>$(id).addEventListener('input',hSoon));
+document.querySelectorAll('.gsw').forEach(b=>b.onclick=()=>{$('hBg').value=b.dataset.c;hRender();});
+$('hInl').querySelector('input').onchange=e=>{$('hInl').classList.toggle('on',e.target.checked);hRender();};
+$('hZ2').querySelector('input').onchange=e=>$('hZ2').classList.toggle('on',e.target.checked);
+$('hZ').onclick=e=>{if(e.target.dataset.z!==undefined){HS.z=+e.target.dataset.z;hRender();}};
+$('hTbl').onclick=e=>{const tr=e.target.closest('tr[data-i]');if(tr){HS.sel=+tr.dataset.i;hRender();}};
+function readImg(file,done){
+  const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>done(im,r.result);im.src=r.result;};r.readAsDataURL(file);
+}
+function edgeColor(im){                   // 이미지 가장자리가 거의 한 가지 색이면 그 색(#rrggbb), 아니면 null
+  const c=document.createElement('canvas'),w=Math.min(120,im.width),h=Math.max(4,Math.round(im.height*w/im.width));
+  c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,w,h);
+  const d=g.getImageData(0,0,w,h).data,ring=[];
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(x<2||y<2||x>=w-2||y>=h-2){const i=(y*w+x)*4;if(d[i+3]>250)ring.push([d[i],d[i+1],d[i+2]]);}
+  if(ring.length<(w+h)*2)return null;                   // 테두리가 투명하면 배경이 없는 이미지
+  const med=k=>ring.map(p=>p[k]).sort((a,b)=>a-b)[ring.length>>1],m=[med(0),med(1),med(2)];
+  const near=ring.filter(p=>Math.abs(p[0]-m[0])+Math.abs(p[1]-m[1])+Math.abs(p[2]-m[2])<=36).length/ring.length;
+  return near>=0.9?'#'+m.map(v=>v.toString(16).padStart(2,'0')).join(''):null;
+}
+function hasBg(im){                       // 네 모서리가 모두 불투명하면 배경이 있는 이미지로 봄
+  const c=document.createElement('canvas'),w=Math.min(60,im.width),h=Math.max(1,Math.round(im.height*w/im.width));
+  c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,w,h);
+  return [[0,0],[w-1,0],[0,h-1],[w-1,h-1]].every(([x,y])=>g.getImageData(x,y,1,1).data[3]>250);
+}
+$('hImg').onchange=e=>{const f=e.target.files[0];if(!f)return;readImg(f,(im,u)=>{HS.img=im;HS.url=u;HS.imgName=f.name;HS.imgMeta=`${f.type.replace('image/','').toUpperCase()} | ${(f.size/1024).toFixed(1)}KB`;HS.opaque=hasBg(im);HS.note='';HS.edge=edgeColor(im);if(HS.opaque){if(HS.edge){$('hBg').value=HS.edge;HS.note=`이미지 배경색(${HS.edge})으로 맞췄어요.`;}else HS.note='이미지 배경이 한 가지 색이 아니에요. 스포이드로 골라 주세요.';}hRender();});};
+$('hImgClr').onclick=()=>{HS.note='';HS.edge=null;HS.img=null;HS.url=null;HS.opaque=false;$('hImg').value='';hRender();};
+$('hLogo').onchange=e=>{const f=e.target.files[0];if(!f)return;readImg(f,(im,u)=>{HS.logo=im;HS.logoUrl=u;HS.logoName=f.name;HS.logoMeta=`${f.type.replace('image/','').toUpperCase()} | ${(f.size/1024).toFixed(1)}KB`;hRender();});};
+$('hLogoClr').onclick=()=>{HS.logo=null;HS.logoUrl=null;$('hLogo').value='';hRender();};
+async function hSave(k){const i=HS.sel,o=hOpts(i),spec=SPECS[i],L=layoutH(spec,o,i);const r=await hBlob(spec,o,L,k);download(r.blob,hName(spec,k)+'.'+(spec.f==='jpg'?'jpg':'png'));}
+$('hPng').onclick=()=>hSave(1);$('hPng2').onclick=()=>hSave(2);$('hPng3').onclick=()=>hSave(3);
+$('hCopy').onclick=async()=>{
+  const ta=$('hCode');
+  try{await navigator.clipboard.writeText(ta.value);}catch(_){ta.select();document.execCommand('copy');}
+  $('hCopy').textContent='복사했습니다 ✔';setTimeout(()=>$('hCopy').textContent='HTML 코드 복사',1500);
+};
+const hDoc=(spec,code)=>`<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><title>${esc(spec.name)}</title></head>\n<body style="margin:0">\n${code}\n</body></html>`;
+$('hFile').onclick=()=>{download(new Blob([hDoc(SPECS[HS.sel],$('hCode').value)],{type:'text/html'}),hName(SPECS[HS.sel])+'.html');};
+$('hZip').onclick=async()=>{
+  const files=[],enc=new TextEncoder(),x2=$('hZ2').querySelector('input').checked,inl=$('hInl').querySelector('input').checked,sc=$('hZipB').value;
+  const lab=$('hZip').textContent;$('hZip').disabled=true;$('hZip').textContent='만드는 중...';
+  for(let i=0;i<SPECS.length;i++){
+    const sp=SPECS[i];if(sc!=='all'&&sp.b!==sc)continue;
+    const o=hOpts(i),L=layoutH(sp,o,i),dir=BRANDS[sp.b],ext=sp.f==='jpg'?'jpg':'png';
+    files.push({name:`${dir}/${hName(sp)}.${ext}`,data:new Uint8Array(await (await hBlob(sp,o,L,1)).blob.arrayBuffer())});
+    if(x2)files.push({name:`${dir}/2배고해상도/${hName(sp,2)}.${ext}`,data:new Uint8Array(await (await hBlob(sp,o,L,2)).blob.arrayBuffer())});
+    files.push({name:`${dir}/HTML코드/${hName(sp)}.html`,data:enc.encode(hDoc(sp,htmlOf(sp,o,L,inl)))});
+    if(G[i]&&G[i].push)files.push({name:`${dir}/${hName(sp)}_푸시문구.txt`,data:enc.encode(`제목: ${$('hPT').value}\r\n내용: ${$('hPC').value}\r\n`)});
+  }
+  download(makeZip(files),`${$('hSvc').value.trim()||'company'}_HTML배너_${sc==='all'?'전체':BRANDS[sc]}.zip`);
+  $('hZip').disabled=false;$('hZip').textContent=lab;
+};
+// ---------- 배경색 스포이드 ----------
+function setBg(hex,msg){$('hBg').value=hex;HS.note=msg||'';hRender();}
+$('hAutoBg').onclick=()=>{
+  if(!HS.img){HS.note='먼저 이미지를 올려 주세요.';hRender();return;}
+  const c=edgeColor(HS.img);
+  if(c)setBg(c,`이미지 배경색(${c})으로 맞췄어요.`);else{HS.note='이미지 배경이 투명하거나 한 가지 색이 아니에요.';hRender();}
+};
+$('hDrop').onclick=async()=>{
+  if(!window.EyeDropper){HS.note='이 브라우저는 스포이드를 지원하지 않아요. 사진 버튼을 쓰세요.';hRender();return;}
+  try{const r=await new EyeDropper().open();setBg(r.sRGBHex,`집은 색(${r.sRGBHex})으로 맞췄어요.`);}catch(_){}
+};
+(function(){
+  const pk=$('hPick'),cv=$('hPickCv'),sw=$('hPickSw'),hx=$('hPickHex'),msg=$('hPickMsg');let src=null;
+  const at=e=>{const r=cv.getBoundingClientRect(),x=Math.min(src.width-1,Math.max(0,Math.floor((e.clientX-r.left)*src.width/r.width))),y=Math.min(src.height-1,Math.max(0,Math.floor((e.clientY-r.top)*src.height/r.height)));return src.getContext('2d').getImageData(x,y,1,1).data;};
+  const hex=d=>'#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+  $('hFromImg').onclick=()=>{
+    if(!HS.img){HS.note='먼저 이미지를 올려 주세요.';hRender();return;}
+    src=document.createElement('canvas');src.width=HS.img.width;src.height=HS.img.height;src.getContext('2d',{willReadFrequently:true}).drawImage(HS.img,0,0);
+    const k=Math.min(1,560/HS.img.width,460/HS.img.height);cv.width=Math.round(HS.img.width*k);cv.height=Math.round(HS.img.height*k);
+    cv.getContext('2d').drawImage(HS.img,0,0,cv.width,cv.height);sw.style.background='#fff';hx.textContent='';msg.textContent='체크무늬로 보이는 부분은 투명해서 고를 수 없습니다.';pk.style.display='flex';
+  };
+  cv.onmousemove=e=>{const d=at(e);if(d[3]<250){hx.textContent='투명';sw.style.background='transparent';return;}sw.style.background=hex(d);hx.textContent=hex(d);};
+  cv.onclick=e=>{const d=at(e);if(d[3]<250){msg.textContent='투명한 부분이에요. 색이 있는 부분을 눌러 주세요.';return;}pk.style.display='none';setBg(hex(d),`집은 색(${hex(d)})으로 맞췄어요.`);};
+  $('hPickX').onclick=()=>{pk.style.display='none';};
+})();
+// ---------- 색 그래프(팔레트) ----------
+(function(){
+  const pal=$('hPal'),sv=$('palSV'),hb=$('palH'),hx=$('palHex'),sw=$('palSw');let H=0,Sa=0,V=1;
+  const toRGB=(h,s,v)=>{const f=n=>{const k=(n+h/60)%6;return v-v*s*Math.max(0,Math.min(k,4-k,1));};return [f(5),f(3),f(1)].map(x=>Math.round(x*255));};
+  const toHex=c=>'#'+c.map(v=>v.toString(16).padStart(2,'0')).join('');
+  const toHSV=c=>{const [r,g,b]=c.map(x=>x/255),mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;let h=0;if(d){if(mx===r)h=((g-b)/d+6)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;}return [h,mx?d/mx:0,mx];};
+  function draw(){
+    let g=sv.getContext('2d'),w=sv.width,h=sv.height;
+    g.fillStyle=toHex(toRGB(H,1,1));g.fillRect(0,0,w,h);
+    let l=g.createLinearGradient(0,0,w,0);l.addColorStop(0,'#fff');l.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=l;g.fillRect(0,0,w,h);
+    l=g.createLinearGradient(0,0,0,h);l.addColorStop(0,'rgba(0,0,0,0)');l.addColorStop(1,'#000');g.fillStyle=l;g.fillRect(0,0,w,h);
+    g.beginPath();g.arc(Sa*w,(1-V)*h,7,0,7);g.lineWidth=2;g.strokeStyle='#fff';g.stroke();g.beginPath();g.arc(Sa*w,(1-V)*h,8.5,0,7);g.lineWidth=1;g.strokeStyle='#0008';g.stroke();
+    g=hb.getContext('2d');l=g.createLinearGradient(0,0,hb.width,0);for(let i=0;i<=6;i++)l.addColorStop(i/6,toHex(toRGB(i*60,1,1)));g.fillStyle=l;g.fillRect(0,0,hb.width,hb.height);
+    const x=H/360*hb.width;g.fillStyle='#fff';g.fillRect(x-3,0,6,hb.height);g.strokeStyle='#0008';g.strokeRect(x-3,0,6,hb.height);
+  }
+  function apply(fromHex){
+    const hex=toHex(toRGB(H,Sa,V));$('hBg').value=hex;sw.style.background=hex;if(!fromHex)hx.value=hex;$('hBgSw').style.background=hex;HS.note='';draw();hSoon();
+  }
+  function load(){const m=/^#([0-9a-f]{6})$/i.exec($('hBg').value);if(!m)return;const n=parseInt(m[1],16);[H,Sa,V]=toHSV([n>>16&255,n>>8&255,n&255]);hx.value=$('hBg').value;sw.style.background=$('hBg').value;draw();}
+  const drag=(cv,fn)=>{cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);fn(e);cv.onpointermove=fn;};cv.onpointerup=()=>{cv.onpointermove=null;};};
+  const pos=(cv,e)=>{const r=cv.getBoundingClientRect();return [Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),Math.min(1,Math.max(0,(e.clientY-r.top)/r.height))];};
+  drag(sv,e=>{const [x,y]=pos(sv,e);Sa=x;V=1-y;apply();});
+  drag(hb,e=>{const [x]=pos(hb,e);H=x*360;apply();});
+  hx.oninput=()=>{if(/^#[0-9a-f]{6}$/i.test(hx.value)){const n=parseInt(hx.value.slice(1),16);[H,Sa,V]=toHSV([n>>16&255,n>>8&255,n&255]);apply(true);}};
+  $('hBgSw').onclick=e=>{e.stopPropagation();const open=pal.style.display==='none';pal.style.display=open?'block':'none';if(open)load();};
+  document.addEventListener('click',e=>{if(pal.style.display!=='none'&&!pal.contains(e.target)&&e.target!==$('hBgSw'))pal.style.display='none';});
+})();
+// ---------- 탭 전환 ----------
+let curTab='img';
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  curTab=b.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  $('tabImg').style.display=curTab==='img'?'':'none';
+  $('tabHtml').style.display=curTab==='html'?'':'none';
+  $('steps').style.display=curTab==='img'?'':'none';
+  if(curTab==='html')hRender();
+});
 </script>
 </body>
 </html>
