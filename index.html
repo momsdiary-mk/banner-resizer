@@ -275,7 +275,7 @@ details.kd .in{padding:0 18px 16px}
       <div class="fr"><div class="fl">이미지</div><div class="fv">
         <div class="ibox"><label class="ipick" id="hImgPick" for="hImg">이미지 선택</label><input type="file" id="hImg" accept="image/*" hidden>
           <div class="iset" id="hImgSet" style="display:none"><img id="hImgTh" alt=""><div><b id="hImgNm"></b><small id="hImgMeta"></small></div><button class="x" id="hImgClr" title="빼기">×</button></div></div>
-        <div class="hinfo" style="margin:6px 0 0">배경 없는 PNG 권장 · 올리지 않으면 글자만 들어갑니다</div></div></div>
+        <div class="hinfo" style="margin:6px 0 0">경품·제품·서비스 이미지 (배경 없는 PNG 권장)</div></div></div>
       <div class="fr" id="hIsRow"><div class="fl">이미지 크기</div><div class="fv"><input type="range" id="hIS" min="50" max="100" value="100" style="width:100%"><div class="hinfo" id="hISv" style="margin:2px 0 0">100%</div></div></div>
       <div class="fr" id="hLogoRow"><div class="fl">로고<small>(선택)</small></div><div class="fv">
         <div class="ibox"><label class="ipick" id="hLogoPick" for="hLogo">로고 선택</label><input type="file" id="hLogo" accept="image/*" hidden>
@@ -1179,7 +1179,7 @@ function layoutH(spec,o,i){
   const g=G[i]||null,W=spec.w,Hh=spec.h,mx=spec.mx||0,tall=W/Hh<1.3;
   const p=Math.max(8,Math.round(Math.min(W,Hh)*0.08));
   const cx0=Math.max(mx+12,Math.round(W*(spec.px||0.05))),cw=W-2*cx0,ch=Hh-2*p;
-  const img=HS.img,asp=img?img.width/img.height:1,hasE=!!o.e,hasB=!!o.b;
+  const img=HS.img||(o.side!=='none'?{width:1,height:1}:null),asp=img?img.width/img.height:1,hasE=!!o.e,hasB=!!o.b;   // 이미지를 올리기 전에도 이미지 자리를 비워 둠(미리보기에 점선 칸으로 표시)
   const logo=(g&&g.logo===false)?null:HS.logo,aspL=logo?logo.width/logo.height:1;
   if(!o.t&&!hasE&&!hasB&&!img&&!logo)return {items:[],warn:['문구나 이미지를 넣어 주세요.'],fs:0,ok:false};
   const maxFs=Math.round(tall?Math.min(W*0.1,Hh*0.1):Math.min(Hh*0.3,64));
@@ -1252,7 +1252,7 @@ function layoutH(spec,o,i){
   if(!best.lineOk)warn.push(`줄 수가 가이드(${g.lineNote})를 넘습니다. 문구를 줄여 주세요.`);
   if(o.t&&g&&g.tmin&&best.fs<g.tmin)warn.push(`메인 글자가 ${best.fs}px로 가이드(${g.tmin}~${g.tmax}px)보다 작아졌어요. 문구를 줄여 주세요.`);
   else if(o.t&&!(g&&g.tmin)&&best.fs<16)warn.push(`제목 글자가 ${best.fs}px로 작아 읽기 어려울 수 있어요.`);
-  if(img&&best.iw*2>img.width)warn.push(`올린 이미지(${img.width}px)가 작아, 2배 파일에서는 이미지가 흐려질 수 있어요.`);
+  if(HS.img&&best.iw*2>HS.img.width)warn.push(`올린 이미지(${HS.img.width}px)가 작아, 2배 파일에서는 이미지가 흐려질 수 있어요.`);
   return {items:best.items,warn,fs:best.fs,ok:best.spaceOk&&best.lineOk,box:{x:cx0,y:p,w:cw,h:ch,mx}};
 }
 // 맘스다이어리 가이드 점검 (색·문구·이미지)
@@ -1332,10 +1332,15 @@ function setImgBox(pre,im,name,size){
   set.style.display=im?'flex':'none';pick.style.display=im?'none':'';
   if(im){$(pre+'Th').src=pre==='hImg'?HS.url:HS.logoUrl;$(pre+'Nm').textContent=name;$(pre+'Meta').textContent=`${im.width}x${im.height} | ${size}`;}
 }
+function setSideOpts(wide){                   // 이미지 위치 선택지: 가로 규격은 오른쪽/왼쪽/없음, 세로 규격은 있음/없음
+  const prev=$('hSide').value;
+  $('hSide').innerHTML=wide?'<option value="right">오른쪽 (글자 왼쪽)</option><option value="left">왼쪽 (글자 오른쪽)</option><option value="none">이미지 없음 (글자만)</option>':'<option value="right">문구 아래</option><option value="none">이미지 없음 (글자만)</option>';
+  $('hSide').value=[...$('hSide').options].some(o=>o.value===prev)?prev:'right';
+}
 function hUi(){
   $('hBgSw').style.background=$('hBg').value;
   const i=HS.sel,sp=SPECS[i],g=G[i],wide=sp.w/sp.h>=1.3;
-  $('hISv').textContent=$('hIS').value+'%';dsp('hPosRow',g&&g.pos);dsp('hSideRow',wide);
+  $('hISv').textContent=$('hIS').value+'%';dsp('hPosRow',g&&g.pos);dsp('hSideRow',true);setSideOpts(wide);
   dsp('hBRow',!g||(!g.noBtn&&!g.btn));dsp('hBSelRow',g&&g.btn);dsp('hNoBtn',g&&g.noBtn);
   dsp('hLogoRow',!(g&&g.logo===false));dsp('hPush',g&&g.push);
   setImgBox('hImg',HS.img,HS.imgName,HS.imgMeta);setImgBox('hLogo',HS.logo,HS.logoName,HS.logoMeta);
@@ -1364,7 +1369,8 @@ function hRender(){
   hUi();cnt();
   $('hTitle').textContent=`${BRANDS[spec.b]} · ${spec.name}`;
   const gl=$('hGl').checked?overlay(spec,L):'';
-  $('hStage').innerHTML=`<div id="hIn" style="position:relative;width:${spec.w}px;height:${spec.h}px;transform-origin:0 0">${htmlOf(spec,o,L,true)}${gl}</div>`;
+  const ph=HS.img?'':L.items.filter(it=>it.k==='i'&&it.s==='img').map(it=>`<div data-pick="1" title="눌러서 이미지 선택 (끌어다 놓아도 됩니다)" style="position:absolute;left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px;border:2px dashed #98a2b3;border-radius:10px;background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;text-align:center;font:600 13px/1.5 ${FONT};color:#667085;cursor:pointer">경품·제품·서비스<br>이미지를 올려 주세요<br>(PNG 권장)</div>`).join('');
+  $('hStage').innerHTML=`<div id="hIn" style="position:relative;width:${spec.w}px;height:${spec.h}px;transform-origin:0 0">${htmlOf(spec,o,L,true)}${ph}${gl}</div>`;
   const box=$('hStage').parentNode,avail=Math.max(200,box.clientWidth-30);
   const z=HS.z||Math.min(1,avail/spec.w);
   $('hIn').style.transform=`scale(${z})`;$('hStage').style.width=spec.w*z+'px';$('hStage').style.height=spec.h*z+'px';
@@ -1449,6 +1455,14 @@ $('hZip').onclick=async()=>{
   download(makeZip(files),`${$('hSvc').value.trim()||'company'}_HTML배너_${sc==='all'?'전체':BRANDS[sc]}.zip`);
   $('hZip').disabled=false;$('hZip').textContent=lab;
 };
+// ---------- 미리보기의 이미지 자리에서 바로 올리기 ----------
+$('hStage').addEventListener('click',e=>{if(e.target.closest('[data-pick]'))$('hImg').click();});
+$('hStage').addEventListener('dragover',e=>{if(e.target.closest('[data-pick]')){e.preventDefault();e.stopPropagation();}});
+$('hStage').addEventListener('drop',e=>{
+  const t=e.target.closest('[data-pick]');if(!t)return;
+  e.preventDefault();e.stopPropagation();
+  const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const dt=new DataTransfer();dt.items.add(f);$('hImg').files=dt.files;$('hImg').dispatchEvent(new Event('change'));}
+});
 // ---------- 배경색 스포이드 ----------
 function setBg(hex,msg){$('hBg').value=hex;HS.note=msg||'';hRender();}
 $('hAutoBg').onclick=()=>{
