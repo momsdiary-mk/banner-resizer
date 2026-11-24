@@ -280,7 +280,7 @@ details.kd .in{padding:0 18px 16px}
       <div class="fr" id="hLogoRow"><div class="fl">로고<small>(선택)</small></div><div class="fv">
         <div class="ibox"><label class="ipick" id="hLogoPick" for="hLogo">로고 선택</label><input type="file" id="hLogo" accept="image/*" hidden>
           <div class="iset" id="hLogoSet" style="display:none"><img id="hLogoTh" alt=""><div><b id="hLogoNm"></b><small id="hLogoMeta"></small></div><button class="x" id="hLogoClr" title="빼기">×</button></div></div></div></div>
-      <div class="fr"><div class="fl">메인 카피<i>*</i></div><div class="fv"><div class="inp"><textarea id="hT">태교/육아일기 무료출판</textarea><span class="c" id="hTc"></span></div><div class="hinfo" style="margin:4px 0 0">Enter로 줄바꿈</div></div></div>
+      <div class="fr"><div class="fl">메인 카피<i>*</i></div><div class="fv"><div class="inp"><textarea id="hT">태교/육아일기 무료출판</textarea><span class="c" id="hTcnt"></span></div><div class="hinfo" style="margin:4px 0 0">Enter로 줄바꿈</div></div></div>
       <div class="fr"><div class="fl">서브 카피</div><div class="fv"><div class="inp"><input type="text" id="hE" value="200만 엄마들의 선택!"><span class="c" id="hEc2"></span></div><div class="hinfo" style="margin:4px 0 0">강조할 단어는 *별표*로 감싸세요 (예: *에디슨* 신학기 모음전)</div></div></div>
       <div class="fr" id="hPosRow"><div class="fl">서브 위치</div><div class="fv"><select id="hPos"><option value="above">메인 카피 위</option><option value="below">메인 카피 아래</option></select></div></div>
       <div class="fr"><div class="fl">글꼴</div><div class="fv"><select id="hFont"><optgroup label="고딕"><option value="pret">Pretendard (기본)</option><option value="noto">Noto Sans KR</option><option value="nanum">나눔고딕</option><option value="gothica1">Gothic A1</option><option value="plex">IBM Plex Sans KR</option><option value="malgun">맑은 고딕</option></optgroup><optgroup label="둥근·개성"><option value="gowun">고운돋움</option><option value="jua">주아체 (둥글고 귀여움)</option><option value="dohyeon">도현체 (굵고 또렷함)</option><option value="blackhan">블랙한산스 (아주 굵음)</option></optgroup><optgroup label="명조(바탕)"><option value="myeongjo">나눔명조</option><option value="gowunb">고운바탕</option><option value="notoserif">Noto Serif KR</option><option value="hahmlet">함렛</option><option value="songmyung">송명</option></optgroup></select></div></div>
@@ -1353,7 +1353,7 @@ function hUi(){
 }
 function cnt(){
   const set=(id,n,max)=>{$(id).textContent=max?`${n}`:`${n}`;$(id).className='c'+(max&&n>max?' bad':'');};
-  set('hTc',$('hT').value.replace(/\n/g,'').length);set('hEc2',$('hE').value.length);
+  set('hTcnt',$('hT').value.replace(/\n/g,'').length);set('hEc2',$('hE').value.length);
   set('hPTc',$('hPT').value.length,20);set('hPCc',$('hPC').value.length,50);
 }
 function overlay(spec,L){
@@ -1404,7 +1404,7 @@ function hSoon(){clearTimeout(hTimer);hTimer=setTimeout(async()=>{await loadFont
 })();
 $('hSpecs').onclick=e=>{const b=e.target.closest('.spc');if(b){HS.sel=+b.dataset.i;hRender();}};
 $('hGl').onchange=hRender;
-['hFont','hIS','hE','hT','hB','hBsel','hPos','hSide','hBg','hTc','hEc','hBb','hBt','hSvc','hPT','hPC'].forEach(id=>$(id).addEventListener('input',hSoon));
+['hFont','hIS','hE','hT','hB','hBsel','hPos','hSide','hAlign','hBg','hTc','hEc','hHc','hBb','hBt','hSvc','hPT','hPC'].forEach(id=>$(id).addEventListener('input',hSoon));
 document.querySelectorAll('.gsw').forEach(b=>b.onclick=()=>{$('hBg').value=b.dataset.c;hRender();});
 $('hInl').querySelector('input').onchange=e=>{$('hInl').classList.toggle('on',e.target.checked);hRender();};
 $('hZ2').querySelector('input').onchange=e=>$('hZ2').classList.toggle('on',e.target.checked);
